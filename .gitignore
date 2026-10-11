@@ -14,9 +14,9 @@ dist-ssr
 .env
 .env.*
 !.env.example
-.vercel
-supabase/.temp
-supabase/.branches
+!.env.setup.example
+.wrangler
+appwrite-functions/*/node_modules
 
 # Editor directories and files
 .vscode/*

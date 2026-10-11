@@ -40,7 +40,6 @@ function contextFor(item: Item) {
     item.brand && `Marca: ${item.brand}`,
     item.size && `Taglia: ${item.size}`,
     item.notes && `Note del venditore: ${item.notes}`,
-    item.purchasePrice != null && `Pagato dal venditore: ${item.purchasePrice} €`,
   ].filter(Boolean)
   return known.length ? `\n\nInformazioni fornite dal venditore:\n${known.join('\n')}` : ''
 }

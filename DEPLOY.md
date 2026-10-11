@@ -1,158 +1,151 @@
 # Mettere Rivendo online
 
-Tempo stimato: 30–45 minuti la prima volta. Tutto gratuito per iniziare.
+Servizi usati: **Appwrite Cloud** (login, database, foto, function) e **Cloudflare Pages** (sito). Tempo stimato: circa 40 minuti la prima volta.
 
 | Servizio | A cosa serve | Piano gratuito |
 |---|---|---|
-| **Supabase** | Login (Google + link via email), database, foto private | 500 MB di database, 1 GB di foto, 50.000 utenti al mese |
-| **Vercel** | Ospita il sito con `https` | Hobby, gratis per uso personale |
+| **Appwrite Cloud** | Login (Google + link via email, email incluse), database, foto private, cancellazione account | 75.000 utenti/mese, 2 GB di foto, 5 GB di traffico/mese, 2 progetti per account |
+| **Cloudflare Pages** | Ospita il sito con `https` | Traffico illimitato, 500 pubblicazioni/mese, **uso commerciale consentito** |
 | **Google Cloud** | Pulsante "Continua con Google" | Gratis |
-| **Resend** (o altro SMTP) | Invio delle email di accesso a chiunque | 3.000 email al mese |
 
-> **Prima di vendere l'app:** il piano Hobby di Vercel vale solo per uso personale e non commerciale. Se la fai pagare passa a Vercel Pro (20 $/mese) oppure a Netlify o Cloudflare Pages. Sul piano gratuito di Supabase, un progetto inattivo per 7 giorni viene messo in pausa; con il piano Pro (25 $/mese) no, e in più hai i backup giornalieri.
+> ⚠️ **Limite importante del piano gratuito Appwrite:** un progetto viene **messo in pausa dopo 7 giorni senza attività di sviluppo** (modifiche dalla console o dalla CLI), anche se gli utenti lo usano. Se resta in pausa per 90 giorni viene cancellato. Per un servizio aperto al pubblico o con sponsor serve il piano **Pro (25 $/mese)**, che non va mai in pausa e include i backup giornalieri. Il gratuito va bene per prove e demo.
 
 ---
 
-## 1. Crea il progetto Supabase
+## 1. Crea il progetto Appwrite (5 min)
 
-1. Vai su <https://supabase.com>, registrati e premi **New project**.
-2. Scegli:
-   - **Name:** `rivendo`
-   - **Database password:** generala e conservala in un posto sicuro
-   - **Region:** `Central EU (Frankfurt)`, così i dati restano in Europa (GDPR)
-3. Attendi un paio di minuti che il progetto sia pronto.
+1. Vai su <https://cloud.appwrite.io>, registrati e crea un progetto:
+   - **Name:** `Rivendo`
+   - **Region:** **Frankfurt**, così i dati restano in Europa (GDPR)
+2. Nella pagina **Overview** del progetto copia:
+   - **Project ID**
+   - **API Endpoint**, del tipo `https://fra.cloud.appwrite.io/v1`
+3. **Add platform → Web**, con hostname `localhost`. Aggiungerai il dominio del sito al passo 5.
 
-### Crea le tabelle e le regole di sicurezza
+### Crea tabelle, spazio foto e function con un comando
 
-**Metodo semplice:**
-1. Apri **SQL Editor** → **New query**.
-2. Incolla tutto il contenuto di `supabase/migrations/20261011120000_init.sql`.
-3. Premi **Run**.
+1. **Overview → Integrations → API keys → Create API key**:
+   - **Name:** `setup`
+   - **Expiration:** 1 giorno
+   - **Scopes:** seleziona tutto
+2. Nella cartella del progetto:
+   ```bash
+   cp .env.setup.example .env.setup     # inserisci Endpoint, Project ID e la API key appena creata
+   npm install
+   npm run appwrite:setup
+   ```
+   Lo script crea:
+   - il database `rivendo`, con le tabelle `items` e `user_settings` e la sicurezza per riga attiva;
+   - lo spazio foto privato e cifrato `photos`;
+   - la function `delete-account`, che compila e pubblica.
 
-**Metodo da terminale** (comodo per gli aggiornamenti futuri):
+   Puoi rilanciarlo senza rischi: aggiorna quello che esiste già.
+3. Finito il setup **elimina la API key** dalla console, oppure lasciala scadere: il sito non ne ha bisogno.
+
+---
+
+## 2. Attiva "Continua con Google" (10 min)
+
+1. In Appwrite apri **Auth → Settings → OAuth2 Providers → Google**, attivalo e **copia l'URI di redirect** mostrato (`https://fra.cloud.appwrite.io/v1/account/sessions/oauth2/callback/google/...`).
+2. Vai su <https://console.cloud.google.com>, crea un progetto "Rivendo" e apri **Google Auth Platform**:
+   - **Branding:** nome `Rivendo` e la tua email
+   - **Audience:** scegli **External**, poi **Publish app**
+   - **Clients → Create client → Web application**, con **Authorized redirect URIs** = l'URI copiato da Appwrite
+3. Incolla **Client ID** e **Client secret** nella schermata Google di Appwrite e premi **Update**.
+
+Il **link via email** funziona subito: le email le invia Appwrite, senza configurare altro.
+
+> Apple o Microsoft: attivali in Appwrite allo stesso modo e aggiungili a `VITE_AUTH_PROVIDERS` (es. `google,microsoft`).
+
+---
+
+## 3. Configura il sito (2 min)
+
 ```bash
-npx supabase login
-npx supabase link --project-ref IL_TUO_PROJECT_REF   # il codice nell'URL del progetto
-npx supabase db push
+cp .env.example .env.production.local
 ```
+Compila `.env.production.local`:
 
-Controlla in **Table Editor** che `items` e `user_settings` mostrino l'etichetta **RLS enabled**, e in **Storage** che ci sia il bucket `photos` con la dicitura **Private**.
+| Variabile | Valore |
+|---|---|
+| `VITE_APPWRITE_ENDPOINT` | l'API Endpoint del passo 1 |
+| `VITE_APPWRITE_PROJECT_ID` | il Project ID |
+| `VITE_AUTH_PROVIDERS` | `google` |
+| `VITE_LEGAL_OPERATOR_NAME` | nome o ragione sociale del titolare |
+| `VITE_LEGAL_OPERATOR_ADDRESS` | indirizzo completo del titolare |
+| `VITE_LEGAL_VAT_NUMBER` | partita IVA, se applicabile |
+| `VITE_SUPPORT_EMAIL` | email pubblica di assistenza |
+| `VITE_PRIVACY_EMAIL` | contatto per le richieste privacy |
 
-### Copia le chiavi
-
-In **Project Settings → API Keys** (e **Data API** per l'URL):
-- **Project URL**, del tipo `https://abcdefgh.supabase.co`
-- **Publishable key**, che inizia con `sb_publishable_...`
-
-La publishable key può stare nel sito perché i dati sono protetti dalle regole del database. **Non usare mai la `secret key` nel sito.**
-
----
-
-## 2. Attiva "Continua con Google"
-
-1. Vai su <https://console.cloud.google.com>, crea un progetto (es. "Rivendo") e apri **Google Auth Platform**.
-2. **Branding:** nome app `Rivendo`, email di supporto, logo (facoltativo).
-3. **Audience:** scegli **External**, poi **Publish app**. Con i soli dati base (email e nome) non serve la verifica di Google.
-4. **Clients → Create client → Web application**:
-   - **Authorized JavaScript origins:** `https://IL-TUO-SITO.vercel.app` (aggiungerai il dominio definitivo al passo 5)
-   - **Authorized redirect URIs:** `https://IL_TUO_PROJECT_REF.supabase.co/auth/v1/callback`
-5. Copia **Client ID** e **Client secret**.
-6. In Supabase vai su **Authentication → Sign In / Providers → Google**: attivalo, incolla ID e secret e salva.
-
-> Vuoi anche Apple o Microsoft? Attivali allo stesso modo in Supabase e aggiungili alla variabile `VITE_AUTH_PROVIDERS` (es. `google,azure`). Per Apple serve l'Apple Developer Program (99 $/anno).
+Sono tutti dati pubblici: finiscono nel sito. **Non inserire mai chiavi segrete nelle variabili `VITE_`.** Per lo sviluppo copia gli stessi valori di Appwrite anche in `.env.local`.
 
 ---
 
-## 3. Fai arrivare le email di accesso a tutti
+## 4. Pubblica su Cloudflare Pages (5 min)
 
-Il servizio email incluso in Supabase invia messaggi **solo agli indirizzi del tuo team**: serve per le prove, non per gli utenti veri.
-
-1. Crea un account su <https://resend.com>, aggiungi il tuo dominio (es. `rivendo.it`) e crea una API key.
-2. In Supabase vai su **Authentication → Emails → SMTP Settings → Enable custom SMTP**:
-   - **Host:** `smtp.resend.com`
-   - **Port:** `465`
-   - **Username:** `resend`
-   - **Password:** la API key di Resend
-   - **Sender:** `accesso@rivendo.it`, nome `Rivendo`
-3. In **Authentication → Emails → Templates → Magic Link**:
-   - **Subject:** `Il tuo link per entrare in Rivendo`
-   - **Body:** incolla il contenuto di `supabase/templates/magic_link.html`
-
-Se ti basta Google per accedere, puoi saltare questo passo e lasciare il link via email solo per le prove.
-
----
-
-## 4. Pubblica su Vercel
-
-### Metodo GitHub (consigliato: ogni modifica si pubblica da sola)
-1. Crea un repository **privato** su <https://github.com/new>, chiamato `rivendo`.
+1. Crea un account gratuito su <https://dash.cloudflare.com/sign-up>.
 2. Dalla cartella del progetto:
    ```bash
-   git remote add origin https://github.com/TUO_UTENTE/rivendo.git
-   git push -u origin main
+   npx wrangler login                                                   # si apre il browser: autorizza
+   npx wrangler pages project create rivendo --production-branch main   # solo la prima volta
+   npm run deploy                                                       # compila e pubblica
    ```
-3. Su <https://vercel.com/new> importa il repository. Vercel riconosce Vite da solo.
-4. In **Environment Variables** aggiungi:
-   | Nome | Valore |
-   |---|---|
-   | `VITE_SUPABASE_URL` | `https://IL_TUO_PROJECT_REF.supabase.co` |
-   | `VITE_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_...` |
-   | `VITE_AUTH_PROVIDERS` | `google` |
-5. Premi **Deploy**. In un minuto avrai un indirizzo del tipo `https://rivendo-xyz.vercel.app`.
+3. Alla fine compare l'indirizzo del sito, del tipo **`https://rivendo.pages.dev`**. Per gli aggiornamenti successivi basta `npm run deploy`.
 
-### Metodo da terminale (senza GitHub)
-```bash
-npx vercel            # la prima volta collega l'account e crea il progetto
-npx vercel env add VITE_SUPABASE_URL production
-npx vercel env add VITE_SUPABASE_PUBLISHABLE_KEY production
-npx vercel env add VITE_AUTH_PROVIDERS production
-npx vercel --prod
-```
+Le intestazioni di sicurezza (`public/_headers`) e il ritorno alla pagina giusta per `/privacy`, `/terms` e `/delete-account` funzionano già senza configurazioni.
 
 ---
 
-## 5. Collega il dominio del sito al login
+## 5. Collega il sito al login (2 min)
 
-Adesso che conosci l'indirizzo definitivo:
+1. **Appwrite → Overview → Add platform → Web**, con hostname `rivendo.pages.dev`, oppure il tuo dominio.
+2. **Google Cloud → Clients → il tuo client:** aggiungi `https://rivendo.pages.dev` in **Authorized JavaScript origins**.
 
-1. **Supabase → Authentication → URL Configuration**
-   - **Site URL:** `https://rivendo-xyz.vercel.app` (o il tuo dominio)
-   - **Redirect URLs:** aggiungi `https://rivendo-xyz.vercel.app/**` e, per lo sviluppo, `http://localhost:5173/**`
-2. **Google Cloud → Clients → il tuo client:** aggiungi lo stesso indirizzo in **Authorized JavaScript origins**.
-3. *(Facoltativo)* **Vercel → Settings → Domains:** collega un tuo dominio (es. `app.rivendo.it`) e ripeti i passi 1 e 2 con quel dominio.
+**Prova finale:**
+1. Apri il sito, entra con Google o con il link via email.
+2. Crea un oggetto con una foto, esci e rientra da un altro dispositivo: devi ritrovare tutto.
+3. Prova **Impostazioni → Elimina account e dati** con un account di test.
 
-**Prova finale:** apri il sito, entra con Google, crea un oggetto con una foto, esci, rientra da un altro dispositivo e verifica di ritrovare tutto.
+### Consigliato per la produzione: domini personalizzati
+1. **Cloudflare Pages → rivendo → Custom domains:** collega il sito, per esempio `app.rivendo.it`.
+2. **Appwrite → Settings → Custom domains:** collega l'API, per esempio `api.rivendo.it`.
+
+Con l'API sullo stesso dominio del sito, la sessione usa un cookie sicuro invece del salvataggio nel browser: è più protetta e funziona meglio su Safari. Dopo il collegamento:
+- aggiorna `VITE_APPWRITE_ENDPOINT` (es. `https://api.rivendo.it/v1`);
+- aggiungi il dominio a `connect-src` in `public/_headers`;
+- aggiungi la piattaforma Web in Appwrite;
+- ripubblica con `npm run deploy`.
+
+---
+
+## Prima di aprire al pubblico
+
+1. Compila tutti i dati legali (`VITE_LEGAL_*`, `VITE_SUPPORT_EMAIL`, `VITE_PRIVACY_EMAIL`). Finché mancano, `/privacy` e `/terms` mostrano un avviso di bozza.
+2. Verifica che `https://IL-TUO-DOMINIO/privacy`, `/terms` e `/delete-account` si aprano senza login.
+3. Prova la cancellazione con un account di test. In Appwrite devono sparire l'utente (**Auth**), le sue righe (**Databases**) e le sue foto (**Storage**). La function registra l'esito in **Functions → delete-account → Executions**.
+4. Valuta il piano Appwrite Pro: vedi l'avviso sulla pausa in cima a questa guida.
+5. Segui [SPONSOR_LAUNCH.md](./SPONSOR_LAUNCH.md) per i passaggi legali, store e permessi ancora da completare.
 
 ---
 
 ## Sicurezza: cosa è già attivo
 
-- **Login obbligatorio:** senza accesso non si vede nulla dell'app.
-- **Isolamento dei dati:** ogni riga del database e ogni foto appartiene a un utente. Le regole RLS fanno in modo che nessuno possa leggere o modificare i dati di un altro, nemmeno chiamando le API a mano. Verificato in locale: un altro utente e un visitatore anonimo vedono 0 oggetti e 0 foto.
-- **Foto private:** si vedono solo tramite link firmati che scadono dopo un'ora.
-- **Chiave AI (Gemini/OpenAI):** resta solo sul dispositivo dell'utente e non viene salvata nel database.
-- **Intestazioni di sicurezza** (in `vercel.json`):
-  - CSP: il sito può contattare solo Supabase e i servizi AI;
+- **Login obbligatorio:** senza accesso non si vede nulla dell'app, tranne le pagine legali.
+- **Permessi per riga e per file:** ogni oggetto, impostazione e foto è leggibile e modificabile solo dal proprietario (`Role.user`). Le tabelle e lo spazio foto permettono agli utenti collegati solo di *creare*, mai di leggere i dati altrui.
+- **Foto:** private e cifrate; il sito le scarica solo con la sessione dell'utente.
+- **Cancellazione account:** la esegue una function con una chiave server temporanea generata da Appwrite. Nessuna chiave segreta è presente nel sito.
+- **Chiave AI (Gemini/OpenAI):** resta solo sul dispositivo dell'utente. Prima di ogni analisi l'utente conferma l'invio delle foto, e il prezzo di acquisto non viene mai inviato.
+- **Intestazioni di sicurezza** (`public/_headers`):
+  - CSP: il sito può contattare solo Appwrite e i servizi AI;
   - protezione dal clickjacking;
   - HSTS, che obbliga a usare `https`.
-- **Nessuna password da gestire:** si accede con Google o con un link via email.
-
-> Se un giorno colleghi a Supabase un dominio personalizzato (es. `api.rivendo.it`), aggiungilo a `connect-src` e `img-src` nella CSP dentro `vercel.json`.
 
 ## Sviluppo in locale
 
-Serve Docker (Rancher Desktop o Docker Desktop).
-
 ```bash
 npm install
-npm run db:start      # avvia Supabase in locale e applica lo schema
-cp .env.example .env.local   # poi inserisci URL e publishable key mostrati da db:start
-npm run dev           # http://localhost:5173
+cp .env.example .env.local   # Endpoint e Project ID (anche dello stesso progetto cloud: basta la piattaforma Web "localhost")
+npm run dev                  # http://localhost:5173
 ```
 
-- Le email di accesso in locale arrivano su **Mailpit**: <http://127.0.0.1:54324>
-- `npm run db:stop` ferma Supabase; `npm run db:reset` riparte da un database vuoto.
-
-## Aggiornare il database in futuro
-
-Crea un nuovo file in `supabase/migrations/` (es. `20261101090000_nuova_colonna.sql`), provalo in locale con `npm run db:reset` e poi applicalo online con `npx supabase db push`.
+Vuoi un Appwrite tutto locale? Installalo con Docker seguendo <https://appwrite.io/docs/advanced/self-hosting>, crea un progetto e una API key dalla console locale e lancia `npm run appwrite:setup` con l'endpoint locale.

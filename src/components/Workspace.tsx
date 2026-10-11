@@ -1,9 +1,8 @@
-import type { User } from '@supabase/supabase-js'
 import { useEffect, useRef, useState } from 'react'
+import type { User } from '../appwrite'
 import { deleteItem, loadItems, loadRemoteSettings, saveItem, saveRemoteSettings } from '../db'
 import { demoItems } from '../demo'
 import { loadSettings, mergeSettings, saveSettings, type Settings } from '../settings'
-import { supabase } from '../supabase'
 import { newItem, type Item } from '../types'
 import Dashboard from './Dashboard'
 import Inventory from './Inventory'
@@ -22,11 +21,17 @@ const NAV: { id: View; label: string }[] = [
 const byNewest = (list: Item[]) => list.sort((a, b) => b.createdAt - a.createdAt)
 const message = (e: unknown) => (e instanceof Error ? e.message : 'Errore imprevisto')
 
-export default function Workspace({ user }: { user: User }) {
+interface Props {
+  user: User
+  onSignOut: (everywhere?: boolean) => Promise<void>
+  initialView?: View
+}
+
+export default function Workspace({ user, onSignOut, initialView = 'inventory' }: Props) {
   const [items, setItems] = useState<Item[] | null>(null)
   const [loadError, setLoadError] = useState('')
-  const [settings, setSettings] = useState<Settings>(() => loadSettings(user.id))
-  const [view, setView] = useState<View>('inventory')
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(user.$id))
+  const [view, setView] = useState<View>(initialView)
   const [editing, setEditing] = useState<{ item: Item; isNew: boolean } | null>(null)
   const settingsTimer = useRef<number | undefined>(undefined)
 
@@ -49,7 +54,7 @@ export default function Workspace({ user }: { user: User }) {
         if (!alive || !remote) return
         setSettings((local) => {
           const merged = mergeSettings(remote, local.apiKey)
-          saveSettings(merged, user.id)
+          saveSettings(merged, user.$id)
           return merged
         })
       })
@@ -57,11 +62,11 @@ export default function Workspace({ user }: { user: User }) {
     return () => {
       alive = false
     }
-  }, [user.id])
+  }, [user.$id])
 
   const updateSettings = (s: Settings) => {
     setSettings(s)
-    saveSettings(s, user.id)
+    saveSettings(s, user.$id)
     window.clearTimeout(settingsTimer.current)
     settingsTimer.current = window.setTimeout(() => saveRemoteSettings(s).catch(() => {}), 600)
   }
@@ -103,7 +108,7 @@ export default function Workspace({ user }: { user: User }) {
           <button className="btn btn-primary topbar-cta" onClick={create}>
             <span aria-hidden>+</span> Nuovo oggetto
           </button>
-          <UserMenu user={user} onSettings={() => setView('settings')} onSignOut={() => supabase.auth.signOut()} />
+          <UserMenu user={user} onSettings={() => setView('settings')} onSignOut={() => onSignOut()} />
         </div>
       </header>
 
@@ -132,7 +137,7 @@ export default function Workspace({ user }: { user: User }) {
         ) : view === 'dashboard' ? (
           <Dashboard items={items} settings={settings} onOpen={open} />
         ) : (
-          <SettingsView settings={settings} onChange={updateSettings} items={items} user={user} onImported={reload} />
+          <SettingsView settings={settings} onChange={updateSettings} items={items} user={user} onSignOut={onSignOut} onImported={reload} />
         )}
       </main>
 

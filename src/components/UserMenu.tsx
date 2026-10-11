@@ -1,5 +1,5 @@
-import type { User } from '@supabase/supabase-js'
 import { useEffect, useRef, useState } from 'react'
+import type { User } from '../appwrite'
 
 interface Props {
   user: User
@@ -10,8 +10,7 @@ interface Props {
 export default function UserMenu({ user, onSettings, onSignOut }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const name = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? 'Account'
-  const avatar = user.user_metadata?.avatar_url as string | undefined
+  const name = user.name || user.email || 'Account'
 
   useEffect(() => {
     if (!open) return
@@ -28,7 +27,7 @@ export default function UserMenu({ user, onSettings, onSignOut }: Props) {
   return (
     <div className="user-menu" ref={ref}>
       <button className="avatar" aria-label="Account" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-        {avatar ? <img src={avatar} alt="" referrerPolicy="no-referrer" /> : name.charAt(0).toUpperCase()}
+        {name.charAt(0).toUpperCase()}
       </button>
       {open && (
         <div className="menu" role="menu">

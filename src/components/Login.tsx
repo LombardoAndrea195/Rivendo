@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ReactElement } from 'react'
-import { AUTH_PROVIDERS, supabase, type AuthProvider } from '../supabase'
+import { ID, OAuthProvider } from 'appwrite'
+import { account, AUTH_PROVIDERS, type AuthProvider } from '../appwrite'
 
 const PROVIDERS: Record<AuthProvider, { label: string; icon: ReactElement }> = {
   google: {
@@ -21,7 +22,7 @@ const PROVIDERS: Record<AuthProvider, { label: string; icon: ReactElement }> = {
       </svg>
     ),
   },
-  azure: {
+  microsoft: {
     label: 'Continua con Microsoft',
     icon: (
       <svg viewBox="0 0 21 21" width="18" height="18" aria-hidden>
@@ -34,42 +35,47 @@ const PROVIDERS: Record<AuthProvider, { label: string; icon: ReactElement }> = {
   },
 }
 
-function friendly(message: string) {
-  if (/provider is not enabled|Unsupported provider/i.test(message)) return 'Questo metodo di accesso non è ancora attivo. Usa il link via email.'
-  if (/rate limit|too many/i.test(message)) return 'Troppi tentativi. Aspetta un minuto e riprova.'
-  if (/invalid.*email|email.*invalid/i.test(message)) return 'Indirizzo email non valido.'
+const OAUTH: Record<AuthProvider, OAuthProvider> = {
+  google: OAuthProvider.Google,
+  apple: OAuthProvider.Apple,
+  microsoft: OAuthProvider.Microsoft,
+}
+
+function friendly(e: unknown) {
+  const message = e instanceof Error ? e.message : String(e)
+  const code = (e as { code?: number }).code
+  if (code === 429 || /rate limit|too many/i.test(message)) return 'Troppi tentativi. Aspetta un minuto e riprova.'
+  if (/provider.*(disabled|not enabled)|unsupported/i.test(message)) return 'Questo metodo di accesso non è ancora attivo. Usa il link via email.'
+  if (/smtp|mail.*(fail|disabled)/i.test(message)) return 'Non riesco a inviare l’email in questo momento. Riprova più tardi.'
+  if (code === 400 && /email/i.test(message)) return 'Indirizzo email non valido.'
   return message
 }
 
-function initialError() {
-  const params = new URLSearchParams(window.location.hash.slice(1) || window.location.search)
-  const description = params.get('error_description')
-  if (description) window.history.replaceState(null, '', window.location.pathname)
-  return description ? friendly(description.replace(/\+/g, ' ')) : ''
-}
-
-export default function Login() {
+export default function Login({ initialError = '', deletionMode = false }: { initialError?: string; deletionMode?: boolean }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle')
   const [error, setError] = useState(initialError)
-  const redirectTo = window.location.origin
+  const returnTo = `${window.location.origin}${deletionMode ? '/delete-account' : '/'}`
 
-  const signInWith = async (provider: AuthProvider) => {
+  const signInWith = (provider: AuthProvider) => {
     setError('')
-    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })
-    if (error) setError(friendly(error.message))
+    try {
+      account.createOAuth2Token({ provider: OAUTH[provider], success: returnTo, failure: `${returnTo}?error=oauth` })
+    } catch (e) {
+      setError(friendly(e))
+    }
   }
 
   const sendLink = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
     setState('sending')
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: redirectTo } })
-    if (error) {
-      setError(friendly(error.message))
-      setState('idle')
-    } else {
+    try {
+      await account.createMagicURLToken({ userId: ID.unique(), email: email.trim(), url: returnTo })
       setState('sent')
+    } catch (err) {
+      setError(friendly(err))
+      setState('idle')
     }
   }
 
@@ -101,6 +107,11 @@ export default function Login() {
 
       <section className="auth-panel">
         <div className="auth-card">
+          {deletionMode && (
+            <div className="notice">
+              Accedi con lo stesso metodo usato per creare l’account. Dopo l’accesso potrai confermare la cancellazione dalle impostazioni.
+            </div>
+          )}
           {state === 'sent' ? (
             <div className="auth-sent" role="status">
               <div className="auth-icon" aria-hidden>
@@ -165,6 +176,11 @@ export default function Login() {
               {error}
             </p>
           )}
+          <nav className="legal-links" aria-label="Informazioni legali">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Termini</a>
+            <a href="/delete-account">Elimina account</a>
+          </nav>
         </div>
       </section>
     </div>

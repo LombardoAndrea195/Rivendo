@@ -1,12 +1,10 @@
+import { ID, Permission, Role } from 'appwrite'
 import { useEffect, useState } from 'react'
-import { supabase } from './supabase'
+import { client, PHOTOS_BUCKET, storage } from './appwrite'
 
-const BUCKET = 'photos'
-const TTL = 3600
-
-const cache = new Map<string, { url: string; exp: number }>()
-let queue: { path: string; resolve: (url: string) => void; reject: (e: unknown) => void }[] = []
-let scheduled = false
+// Le foto salvate sono identificate dall'id del file su Appwrite; quelle non ancora salvate sono data URL.
+const cache = new Map<string, Promise<Blob>>()
+const objectUrls = new Map<string, string>()
 
 export const isLocalPhoto = (p: string) => p.startsWith('data:') || p.startsWith('blob:')
 
@@ -16,71 +14,52 @@ function dataUrlToBlob(dataUrl: string) {
   return new Blob([bytes], { type: head.slice(5, head.indexOf(';')) || 'image/jpeg' })
 }
 
-function flush() {
-  scheduled = false
-  const batch = queue
-  queue = []
-  const paths = [...new Set(batch.map((b) => b.path))]
-  supabase.storage
-    .from(BUCKET)
-    .createSignedUrls(paths, TTL)
-    .then(({ data, error }) => {
-      const found = new Map<string, string>()
-      for (const d of data ?? []) {
-        if (d.path && d.signedUrl) {
-          found.set(d.path, d.signedUrl)
-          cache.set(d.path, { url: d.signedUrl, exp: Date.now() + (TTL - 120) * 1000 })
-        }
-      }
-      for (const b of batch) {
-        const url = found.get(b.path)
-        if (url) b.resolve(url)
-        else b.reject(error ?? new Error('Foto non trovata'))
-      }
-    })
+// Scarica la foto passando la sessione anche quando il browser blocca i cookie di terze parti (es. Safari).
+function fetchFile(fileId: string): Promise<Blob> {
+  let pending = cache.get(fileId)
+  if (!pending) {
+    const url = new URL(storage.getFileView({ bucketId: PHOTOS_BUCKET, fileId }))
+    pending = client.call('get', url, {}, {}, 'arrayBuffer').then((buf: ArrayBuffer) => new Blob([buf], { type: 'image/jpeg' }))
+    pending.catch(() => cache.delete(fileId))
+    cache.set(fileId, pending)
+  }
+  return pending
 }
 
-export function photoUrl(path: string): Promise<string> {
-  if (isLocalPhoto(path)) return Promise.resolve(path)
-  const hit = cache.get(path)
-  if (hit && hit.exp > Date.now()) return Promise.resolve(hit.url)
-  return new Promise((resolve, reject) => {
-    queue.push({ path, resolve, reject })
-    if (!scheduled) {
-      scheduled = true
-      queueMicrotask(flush)
-    }
-  })
+export async function photoBlob(photo: string): Promise<Blob> {
+  return photo.startsWith('data:') ? dataUrlToBlob(photo) : fetchFile(photo)
 }
 
-export function usePhotoUrl(path: string | undefined) {
-  const [resolved, setResolved] = useState<{ path: string; url: string } | null>(null)
+export async function photoUrl(photo: string): Promise<string> {
+  if (isLocalPhoto(photo)) return photo
+  const known = objectUrls.get(photo)
+  if (known) return known
+  const url = URL.createObjectURL(await fetchFile(photo))
+  objectUrls.set(photo, url)
+  return url
+}
+
+export function usePhotoUrl(photo: string | undefined) {
+  const [resolved, setResolved] = useState<{ photo: string; url: string } | null>(null)
   useEffect(() => {
-    if (!path) return
+    if (!photo) return
     let alive = true
-    photoUrl(path)
-      .then((url) => alive && setResolved({ path, url }))
+    photoUrl(photo)
+      .then((url) => alive && setResolved({ photo, url }))
       .catch(() => {})
     return () => {
       alive = false
     }
-  }, [path])
-  if (!path) return undefined
-  if (isLocalPhoto(path)) return path
-  if (resolved?.path === path) return resolved.url
-  return cache.get(path)?.url
+  }, [photo])
+  if (!photo) return undefined
+  if (isLocalPhoto(photo)) return photo
+  if (resolved?.photo === photo) return resolved.url
+  return objectUrls.get(photo)
 }
 
-export async function photoBlob(path: string): Promise<Blob> {
-  if (path.startsWith('data:')) return dataUrlToBlob(path)
-  const { data, error } = await supabase.storage.from(BUCKET).download(path)
-  if (error || !data) throw error ?? new Error('Impossibile scaricare la foto')
-  return data
-}
-
-export async function photoDataUrl(path: string): Promise<string> {
-  if (path.startsWith('data:')) return path
-  const blob = await photoBlob(path)
+export async function photoDataUrl(photo: string): Promise<string> {
+  if (photo.startsWith('data:')) return photo
+  const blob = await photoBlob(photo)
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as string)
@@ -89,20 +68,35 @@ export async function photoDataUrl(path: string): Promise<string> {
   })
 }
 
-const randomId = () => crypto.randomUUID?.() ?? `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`
+export const ownerOnly = (userId: string) => [
+  Permission.read(Role.user(userId)),
+  Permission.update(Role.user(userId)),
+  Permission.delete(Role.user(userId)),
+]
 
-export async function uploadPhoto(dataUrl: string, userId: string, itemId: string) {
+export async function uploadPhoto(dataUrl: string, userId: string) {
   const blob = dataUrlToBlob(dataUrl)
-  const path = `${userId}/${itemId}/${randomId()}.jpg`
-  const { error } = await supabase.storage.from(BUCKET).upload(path, blob, { contentType: blob.type || 'image/jpeg', cacheControl: '3600' })
-  if (error) throw error
-  cache.set(path, { url: dataUrl, exp: Number.MAX_SAFE_INTEGER })
-  return path
+  const file = await storage.createFile({
+    bucketId: PHOTOS_BUCKET,
+    fileId: ID.unique(),
+    file: new File([blob], `${userId}.jpg`, { type: blob.type }),
+    permissions: ownerOnly(userId),
+  })
+  cache.set(file.$id, Promise.resolve(blob))
+  objectUrls.set(file.$id, dataUrl)
+  return file.$id
 }
 
-export async function prunePhotos(userId: string, itemId: string, keep: string[]) {
-  const folder = `${userId}/${itemId}`
-  const { data } = await supabase.storage.from(BUCKET).list(folder, { limit: 100 })
-  const stale = (data ?? []).map((f) => `${folder}/${f.name}`).filter((p) => !keep.includes(p))
-  if (stale.length) await supabase.storage.from(BUCKET).remove(stale)
+export async function deletePhotos(fileIds: string[]) {
+  await Promise.all(
+    fileIds.map((fileId) =>
+      storage.deleteFile({ bucketId: PHOTOS_BUCKET, fileId }).catch((e: { code?: number }) => {
+        if (e.code !== 404) throw e
+      }),
+    ),
+  )
+  for (const id of fileIds) {
+    cache.delete(id)
+    objectUrls.delete(id)
+  }
 }

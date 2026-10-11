@@ -54,11 +54,11 @@ export default function ItemEditor({ initial, isNew, settings, onClose, onSave, 
     const others = (item.listedOn ?? []).filter((p) => p !== platform)
     const next: Item = on
       ? {
-          ...item,
-          listedOn: [...others, platform],
-          status: item.status === 'draft' ? 'listed' : item.status,
-          listedDate: item.listedDate || today(),
-        }
+        ...item,
+        listedOn: [...others, platform],
+        status: item.status === 'draft' ? 'listed' : item.status,
+        listedDate: item.listedDate || today(),
+      }
       : { ...item, listedOn: others }
     setItem(next)
     return run(async () => {
@@ -100,6 +100,18 @@ export default function ItemEditor({ initial, isNew, settings, onClose, onSave, 
     }))
 
   const runAi = async () => {
+    if (!settings.apiKey) {
+      setAiError('Aggiungi una chiave API nelle Impostazioni per usare l’AI.')
+      return
+    }
+    const providerName = settings.provider === 'gemini' ? 'Google Gemini' : 'OpenAI'
+    if (
+      !confirm(
+        `Per generare l’annuncio, invierai a ${providerName} fino a 4 foto e titolo, marca, taglia e note dell’oggetto. Il prezzo di acquisto non viene inviato. La richiesta usa la tua chiave API. Vuoi continuare?`,
+      )
+    ) {
+      return
+    }
     setBusy(true)
     setAiError('')
     setAiStatus('')
@@ -220,6 +232,9 @@ export default function ItemEditor({ initial, isNew, settings, onClose, onSave, 
                 {busy ? <span className="spinner" aria-hidden /> : <span aria-hidden>✨</span>}
                 {busy ? aiStatus || 'Analizzo le foto…' : 'Genera annuncio e prezzo con AI'}
               </button>
+              <p className="muted small">
+                Se continui, fino a 4 foto e i dettagli dell’oggetto vengono inviati a {settings.provider === 'gemini' ? 'Google Gemini' : 'OpenAI'} tramite la tua chiave API.
+              </p>
               {!settings.apiKey && <p className="muted small">Serve una chiave API (Gemini ha un piano gratuito): aggiungila in Impostazioni.</p>}
               {aiError && (
                 <p className="error small" role="alert">

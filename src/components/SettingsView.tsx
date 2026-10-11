@@ -1,11 +1,10 @@
-import type { User } from '@supabase/supabase-js'
 import { useEffect, useRef, useState } from 'react'
-import { clearLegacyItems, deleteItem, loadLegacyItems, saveItem } from '../db'
+import { clearLegacyItems, deleteAccount, deleteItem, loadLegacyItems, saveItem } from '../db'
 import { FEES_CHECKED, feeRule, type AccountType, type FeePlatform } from '../fees'
 import { profitOf } from '../listing'
 import { photoDataUrl } from '../photos'
 import { DEFAULT_MODELS, type AiProvider, type Settings } from '../settings'
-import { supabase } from '../supabase'
+import type { User } from '../appwrite'
 import type { Item } from '../types'
 
 const FEE_PLATFORMS: { id: FeePlatform; label: string }[] = [
@@ -19,6 +18,7 @@ interface Props {
   onChange: (s: Settings) => void
   items: Item[]
   user: User
+  onSignOut: (everywhere?: boolean) => Promise<void>
   onImported: () => void
 }
 
@@ -36,14 +36,13 @@ function download(name: string, content: string, type: string) {
 
 const csvCell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
 
-export default function SettingsView({ settings, onChange, items, user, onImported }: Props) {
+export default function SettingsView({ settings, onChange, items, user, onSignOut, onImported }: Props) {
   const [showKey, setShowKey] = useState(false)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
   const [legacy, setLegacy] = useState<Item[]>([])
   const importRef = useRef<HTMLInputElement>(null)
   const stamp = () => new Date().toISOString().slice(0, 10)
-  const provider = user.app_metadata?.provider as string | undefined
 
   useEffect(() => {
     loadLegacyItems().then(setLegacy)
@@ -105,19 +104,41 @@ export default function SettingsView({ settings, onChange, items, user, onImport
         <h2>Account</h2>
         <div className="account-row">
           <div className="account-id">
-            <strong>{(user.user_metadata?.full_name as string | undefined) ?? user.email}</strong>
-            <span className="muted small">
-              {user.email} · accesso con {provider === 'google' ? 'Google' : provider === 'apple' ? 'Apple' : provider === 'azure' ? 'Microsoft' : 'link via email'}
-            </span>
+            <strong>{user.name || user.email}</strong>
+            {user.name && <span className="muted small">{user.email}</span>}
           </div>
           <div className="btn-row">
-            <button className="btn btn-ghost" onClick={() => supabase.auth.signOut()}>
+            <button className="btn btn-ghost" onClick={() => onSignOut()}>
               Esci
             </button>
-            <button className="btn btn-danger-ghost" onClick={() => supabase.auth.signOut({ scope: 'global' })}>
+            <button className="btn btn-danger-ghost" onClick={() => onSignOut(true)}>
               Esci da tutti i dispositivi
             </button>
           </div>
+        </div>
+        <hr />
+        <div className="stack">
+          <div>
+            <strong>Elimina account</strong>
+            <p className="muted small">Rimuove definitivamente account, inventario, impostazioni e foto associate.</p>
+          </div>
+          <button
+            className="btn btn-danger-ghost"
+            disabled={busy}
+            onClick={() => {
+              if (!confirm('Eliminare definitivamente il tuo account, tutti gli oggetti e tutte le foto? Questa operazione non si può annullare.')) return
+              task('Elimino account e dati…', async () => {
+                await deleteAccount()
+                localStorage.removeItem(`rivendo:settings:${user.$id}`)
+                localStorage.removeItem('cookieFallback')
+                await clearLegacyItems()
+                window.location.replace('/')
+                return 'Account eliminato.'
+              })
+            }}
+          >
+            Elimina account e dati
+          </button>
         </div>
       </div>
 
@@ -333,6 +354,11 @@ export default function SettingsView({ settings, onChange, items, user, onImport
           Elimina tutti i dati
         </button>
       </div>
+      <p className="legal-links" aria-label="Informazioni legali">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Termini</a>
+        <a href="/delete-account">Elimina account</a>
+      </p>
     </section>
   )
 }
