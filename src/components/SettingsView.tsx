@@ -4,7 +4,7 @@ import { FEES_CHECKED, feeRule, type AccountType, type FeePlatform } from '../fe
 import { profitOf } from '../listing'
 import { photoDataUrl } from '../photos'
 import { DEFAULT_MODELS, type AiProvider, type Settings } from '../settings'
-import type { User } from '../appwrite'
+import type { User } from '../firebase'
 import type { Item } from '../types'
 
 const FEE_PLATFORMS: { id: FeePlatform; label: string }[] = [
@@ -18,7 +18,7 @@ interface Props {
   onChange: (s: Settings) => void
   items: Item[]
   user: User
-  onSignOut: (everywhere?: boolean) => Promise<void>
+  onSignOut: () => Promise<void>
   onImported: () => void
 }
 
@@ -104,17 +104,12 @@ export default function SettingsView({ settings, onChange, items, user, onSignOu
         <h2>Account</h2>
         <div className="account-row">
           <div className="account-id">
-            <strong>{user.name || user.email}</strong>
-            {user.name && <span className="muted small">{user.email}</span>}
+            <strong>{user.displayName || user.email}</strong>
+            {user.displayName && <span className="muted small">{user.email}</span>}
           </div>
-          <div className="btn-row">
-            <button className="btn btn-ghost" onClick={() => onSignOut()}>
-              Esci
-            </button>
-            <button className="btn btn-danger-ghost" onClick={() => onSignOut(true)}>
-              Esci da tutti i dispositivi
-            </button>
-          </div>
+          <button className="btn btn-ghost" onClick={() => onSignOut()}>
+            Esci
+          </button>
         </div>
         <hr />
         <div className="stack">
@@ -129,8 +124,7 @@ export default function SettingsView({ settings, onChange, items, user, onSignOu
               if (!confirm('Eliminare definitivamente il tuo account, tutti gli oggetti e tutte le foto? Questa operazione non si può annullare.')) return
               task('Elimino account e dati…', async () => {
                 await deleteAccount()
-                localStorage.removeItem(`rivendo:settings:${user.$id}`)
-                localStorage.removeItem('cookieFallback')
+                localStorage.removeItem(`rivendo:settings:${user.uid}`)
                 await clearLegacyItems()
                 window.location.replace('/')
                 return 'Account eliminato.'

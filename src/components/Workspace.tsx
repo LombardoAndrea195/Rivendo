@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { User } from '../appwrite'
+import type { User } from '../firebase'
 import { deleteItem, loadItems, loadRemoteSettings, saveItem, saveRemoteSettings } from '../db'
 import { demoItems } from '../demo'
 import { loadSettings, mergeSettings, saveSettings, type Settings } from '../settings'
@@ -23,14 +23,14 @@ const message = (e: unknown) => (e instanceof Error ? e.message : 'Errore imprev
 
 interface Props {
   user: User
-  onSignOut: (everywhere?: boolean) => Promise<void>
+  onSignOut: () => Promise<void>
   initialView?: View
 }
 
 export default function Workspace({ user, onSignOut, initialView = 'inventory' }: Props) {
   const [items, setItems] = useState<Item[] | null>(null)
   const [loadError, setLoadError] = useState('')
-  const [settings, setSettings] = useState<Settings>(() => loadSettings(user.$id))
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(user.uid))
   const [view, setView] = useState<View>(initialView)
   const [editing, setEditing] = useState<{ item: Item; isNew: boolean } | null>(null)
   const settingsTimer = useRef<number | undefined>(undefined)
@@ -54,7 +54,7 @@ export default function Workspace({ user, onSignOut, initialView = 'inventory' }
         if (!alive || !remote) return
         setSettings((local) => {
           const merged = mergeSettings(remote, local.apiKey)
-          saveSettings(merged, user.$id)
+          saveSettings(merged, user.uid)
           return merged
         })
       })
@@ -62,11 +62,11 @@ export default function Workspace({ user, onSignOut, initialView = 'inventory' }
     return () => {
       alive = false
     }
-  }, [user.$id])
+  }, [user.uid])
 
   const updateSettings = (s: Settings) => {
     setSettings(s)
-    saveSettings(s, user.$id)
+    saveSettings(s, user.uid)
     window.clearTimeout(settingsTimer.current)
     settingsTimer.current = window.setTimeout(() => saveRemoteSettings(s).catch(() => {}), 600)
   }

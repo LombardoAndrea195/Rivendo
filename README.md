@@ -3,7 +3,7 @@
 Web app per chi compra e rivende oggetti usati su Vinted, Subito ed eBay.
 
 - **Accesso sicuro** con Google o con un link via email: ogni utente vede solo i propri dati.
-- **Dati e foto nel cloud** (Appwrite): li ritrovi su ogni dispositivo.
+- **Dati e foto nel cloud** (Firebase): li ritrovi su ogni dispositivo.
 - **Foto → annuncio con AI:** titolo, descrizione, marca, taglia, condizioni e stima del prezzo.
 - **Pubblicazione assistita** su Vinted, Subito ed eBay: foto pronte, testi da copiare, pagina "Vendi" a un clic.
 - **Margine per le trattative:** pubblichi un po' più alto e accetti le offerte fino al tuo minimo.
@@ -15,15 +15,15 @@ Web app per chi compra e rivende oggetti usati su Vinted, Subito ed eBay.
 
 ```bash
 npm install
-cp .env.example .env.local   # inserisci API Endpoint e Project ID del tuo progetto Appwrite
+cp .env.example .env.local   # inserisci la configurazione web del tuo progetto Firebase
 npm run dev
 ```
 
-Apri <http://localhost:5173>. Il progetto Appwrite deve avere `localhost` tra le piattaforme Web.
+Apri <http://localhost:5173>. `localhost` è già tra i domini autorizzati di Firebase Authentication.
 
 ## Pubblicazione
 
-Vedi **[DEPLOY.md](./DEPLOY.md)** per la guida passo passo: Appwrite, Google e Cloudflare Pages.
+Vedi **[DEPLOY.md](./DEPLOY.md)** per la guida passo passo: Firebase e Cloudflare Pages.
 
 Per preparare un rilascio con sponsor entro il 20 ottobre 2026, segui **[SPONSOR_LAUNCH.md](./SPONSOR_LAUNCH.md)**.
 
@@ -32,10 +32,10 @@ Per preparare un rilascio con sponsor entro il 20 ottobre 2026, segui **[SPONSOR
 | Percorso | Contenuto |
 |---|---|
 | `src/components/` | Interfaccia: login, inventario, editor, andamento, impostazioni |
-| `src/db.ts`, `src/photos.ts` | Salvataggio su Appwrite (database + foto private) |
+| `src/firebase.ts` | Configurazione Firebase (login, Firestore, Storage) |
+| `src/db.ts`, `src/photos.ts` | Salvataggio su Firestore e foto private su Storage, cancellazione account |
 | `src/ai.ts` | Analisi delle foto con Gemini/OpenAI, con tentativi e modelli di riserva |
 | `src/fees.ts` | Commissioni delle piattaforme, con fonti e data di verifica |
-| `scripts/setup-appwrite.mjs` | Crea tabelle, permessi, spazio foto e function su Appwrite |
-| `appwrite-functions/delete-account/` | Function Appwrite per cancellare account, dati e foto |
+| `firestore.rules`, `storage.rules` | Regole di sicurezza: ogni utente accede solo ai propri dati (`npm run firebase:rules`) |
 | `src/components/PublicPage.tsx` | Privacy, termini e pagina di cancellazione account |
 | `public/_headers` | Intestazioni di sicurezza per Cloudflare Pages |

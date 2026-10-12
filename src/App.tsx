@@ -1,39 +1,32 @@
 import { useEffect, useState } from 'react'
-import { account, isConfigured, type User } from './appwrite'
+import { isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, signOut as firebaseSignOut } from 'firebase/auth'
+import { auth, EMAIL_FOR_SIGN_IN, isConfigured, type User } from './firebase'
 import Login from './components/Login'
 import PublicPage from './components/PublicPage'
 import SetupNeeded from './components/SetupNeeded'
 import Workspace from './components/Workspace'
-import { forgetUser } from './db'
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
-// Lo scambio del link (userId + secret) va fatto una sola volta, anche se l'effetto parte due volte.
-let startup: Promise<{ user: User | null; error: string }> | null = null
+// Il link via email va completato una sola volta, anche se l'effetto parte due volte.
+let startup: Promise<string> | null = null
 
 function startSession() {
   startup ??= (async () => {
+    const href = window.location.href
+    if (!isSignInWithEmailLink(auth, href)) return ''
     const params = new URLSearchParams(window.location.search)
-    const userId = params.get('userId')
-    const secret = params.get('secret')
-    const failed = params.has('error')
-    if (userId || secret || failed) {
-      for (const key of ['userId', 'secret', 'expire', 'project', 'error']) params.delete(key)
-      const rest = params.toString()
-      window.history.replaceState(null, '', window.location.pathname + (rest ? `?${rest}` : ''))
-    }
-    let error = failed ? 'Accesso non riuscito. Riprova o usa il link via email.' : ''
-    if (userId && secret) {
-      try {
-        await account.createSession({ userId, secret })
-      } catch {
-        error = 'Il link di accesso non è valido o è scaduto. Richiedine uno nuovo.'
-      }
-    }
+    for (const key of ['apiKey', 'oobCode', 'mode', 'lang', 'continueUrl', 'tenantId']) params.delete(key)
+    const rest = params.toString()
+    window.history.replaceState(null, '', window.location.pathname + (rest ? `?${rest}` : ''))
+    const email = localStorage.getItem(EMAIL_FOR_SIGN_IN) || window.prompt('Per completare l’accesso, conferma la tua email:')
+    if (!email) return 'Accesso annullato. Richiedi un nuovo link.'
     try {
-      return { user: await account.get(), error }
+      await signInWithEmailLink(auth, email.trim(), href)
+      localStorage.removeItem(EMAIL_FOR_SIGN_IN)
+      return ''
     } catch {
-      return { user: null, error }
+      return 'Il link di accesso non è valido o è scaduto. Richiedine uno nuovo.'
     }
   })()
   return startup
@@ -46,25 +39,19 @@ export default function App() {
   useEffect(() => {
     if (!isConfigured) return
     let alive = true
-    startSession().then(({ user, error }) => {
+    let unsubscribe = () => {}
+    startSession().then((error) => {
       if (!alive) return
       setAuthError(error)
-      setUser(user)
+      unsubscribe = onAuthStateChanged(auth, setUser)
     })
     return () => {
       alive = false
+      unsubscribe()
     }
   }, [])
 
-  const signOut = async (everywhere = false) => {
-    try {
-      if (everywhere) await account.deleteSessions()
-      else await account.deleteSession({ sessionId: 'current' })
-    } finally {
-      forgetUser()
-      setUser(null)
-    }
-  }
+  const signOut = () => firebaseSignOut(auth)
 
   if (path === '/privacy') return <PublicPage kind="privacy" />
   if (path === '/terms') return <PublicPage kind="terms" />
@@ -76,5 +63,5 @@ export default function App() {
     if (deletion && !new URLSearchParams(window.location.search).has('login') && !authError) return <PublicPage kind="delete-account" />
     return <Login initialError={authError} deletionMode={deletion} />
   }
-  return <Workspace key={user.$id} user={user} onSignOut={signOut} initialView={deletion ? 'settings' : 'inventory'} />
+  return <Workspace key={user.uid} user={user} onSignOut={signOut} initialView={deletion ? 'settings' : 'inventory'} />
 }

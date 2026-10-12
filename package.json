@@ -8,12 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "appwrite:setup": "node --env-file-if-exists=.env.setup scripts/setup-appwrite.mjs",
     "deploy": "npm run build && wrangler pages deploy dist --project-name rivendo --branch main",
-    "appwrite:security-check": "node --env-file-if-exists=.env.setup scripts/security-check.mjs"
+    "firebase:rules": "npx -y firebase-tools deploy --only firestore:rules,storage"
   },
   "dependencies": {
-    "appwrite": "^28.1.0",
+    "firebase": "^13.0.0",
     "idb-keyval": "^6.3.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
@@ -23,7 +22,6 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
-    "node-appwrite": "^30.0.0",
     "oxlint": "^1.81.0",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",

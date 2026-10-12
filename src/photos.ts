@@ -1,8 +1,8 @@
-import { ID, Permission, Role } from 'appwrite'
+import { deleteObject, getBlob, listAll, ref, uploadBytes } from 'firebase/storage'
 import { useEffect, useState } from 'react'
-import { client, PHOTOS_BUCKET, storage } from './appwrite'
+import { auth, storage } from './firebase'
 
-// Le foto salvate sono identificate dall'id del file su Appwrite; quelle non ancora salvate sono data URL.
+// Le foto salvate sono identificate da un id (file in users/{uid}/photos/{id}); quelle non ancora salvate sono data URL.
 const cache = new Map<string, Promise<Blob>>()
 const objectUrls = new Map<string, string>()
 
@@ -14,14 +14,19 @@ function dataUrlToBlob(dataUrl: string) {
   return new Blob([bytes], { type: head.slice(5, head.indexOf(';')) || 'image/jpeg' })
 }
 
-// Scarica la foto passando la sessione anche quando il browser blocca i cookie di terze parti (es. Safari).
-function fetchFile(fileId: string): Promise<Blob> {
-  let pending = cache.get(fileId)
+function userFolder(userId = auth.currentUser?.uid) {
+  if (!userId) throw new Error('Sessione scaduta: accedi di nuovo.')
+  return ref(storage, `users/${userId}/photos`)
+}
+
+const photoRef = (photoId: string, userId?: string) => ref(userFolder(userId), photoId)
+
+function fetchFile(photoId: string): Promise<Blob> {
+  let pending = cache.get(photoId)
   if (!pending) {
-    const url = new URL(storage.getFileView({ bucketId: PHOTOS_BUCKET, fileId }))
-    pending = client.call('get', url, {}, {}, 'arrayBuffer').then((buf: ArrayBuffer) => new Blob([buf], { type: 'image/jpeg' }))
-    pending.catch(() => cache.delete(fileId))
-    cache.set(fileId, pending)
+    pending = getBlob(photoRef(photoId))
+    pending.catch(() => cache.delete(photoId))
+    cache.set(photoId, pending)
   }
   return pending
 }
@@ -68,35 +73,31 @@ export async function photoDataUrl(photo: string): Promise<string> {
   })
 }
 
-export const ownerOnly = (userId: string) => [
-  Permission.read(Role.user(userId)),
-  Permission.update(Role.user(userId)),
-  Permission.delete(Role.user(userId)),
-]
-
 export async function uploadPhoto(dataUrl: string, userId: string) {
   const blob = dataUrlToBlob(dataUrl)
-  const file = await storage.createFile({
-    bucketId: PHOTOS_BUCKET,
-    fileId: ID.unique(),
-    file: new File([blob], `${userId}.jpg`, { type: blob.type }),
-    permissions: ownerOnly(userId),
-  })
-  cache.set(file.$id, Promise.resolve(blob))
-  objectUrls.set(file.$id, dataUrl)
-  return file.$id
+  const photoId = crypto.randomUUID()
+  await uploadBytes(photoRef(photoId, userId), blob, { contentType: blob.type })
+  cache.set(photoId, Promise.resolve(blob))
+  objectUrls.set(photoId, dataUrl)
+  return photoId
 }
 
-export async function deletePhotos(fileIds: string[]) {
-  await Promise.all(
-    fileIds.map((fileId) =>
-      storage.deleteFile({ bucketId: PHOTOS_BUCKET, fileId }).catch((e: { code?: number }) => {
-        if (e.code !== 404) throw e
-      }),
-    ),
-  )
-  for (const id of fileIds) {
+const ignoreMissing = (e: { code?: string }) => {
+  if (e.code !== 'storage/object-not-found') throw e
+}
+
+export async function deletePhotos(photoIds: string[]) {
+  await Promise.all(photoIds.map((id) => deleteObject(photoRef(id)).catch(ignoreMissing)))
+  for (const id of photoIds) {
     cache.delete(id)
     objectUrls.delete(id)
   }
+}
+
+// Cancella tutte le foto dell'utente, comprese quelle rimaste orfane da un salvataggio interrotto.
+export async function deleteAllPhotos(userId: string) {
+  const { items } = await listAll(userFolder(userId))
+  await Promise.all(items.map((file) => deleteObject(file).catch(ignoreMissing)))
+  cache.clear()
+  objectUrls.clear()
 }

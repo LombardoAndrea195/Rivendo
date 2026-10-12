@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactElement } from 'react'
-import { ID, OAuthProvider } from 'appwrite'
-import { account, AUTH_PROVIDERS, type AuthProvider } from '../appwrite'
+import { GoogleAuthProvider, OAuthProvider, sendSignInLinkToEmail, signInWithPopup, type AuthProvider as FirebaseAuthProvider } from 'firebase/auth'
+import { auth, AUTH_PROVIDERS, EMAIL_FOR_SIGN_IN, type AuthProvider } from '../firebase'
 
 const PROVIDERS: Record<AuthProvider, { label: string; icon: ReactElement }> = {
   google: {
@@ -35,20 +35,24 @@ const PROVIDERS: Record<AuthProvider, { label: string; icon: ReactElement }> = {
   },
 }
 
-const OAUTH: Record<AuthProvider, OAuthProvider> = {
-  google: OAuthProvider.Google,
-  apple: OAuthProvider.Apple,
-  microsoft: OAuthProvider.Microsoft,
+const OAUTH: Record<AuthProvider, () => FirebaseAuthProvider> = {
+  google: () => new GoogleAuthProvider(),
+  apple: () => new OAuthProvider('apple.com'),
+  microsoft: () => new OAuthProvider('microsoft.com'),
 }
 
+// Restituisce '' per gli errori che non vanno mostrati (es. finestra di accesso chiusa dall'utente).
 function friendly(e: unknown) {
-  const message = e instanceof Error ? e.message : String(e)
-  const code = (e as { code?: number }).code
-  if (code === 429 || /rate limit|too many/i.test(message)) return 'Troppi tentativi. Aspetta un minuto e riprova.'
-  if (/provider.*(disabled|not enabled)|unsupported/i.test(message)) return 'Questo metodo di accesso non è ancora attivo. Usa il link via email.'
-  if (/smtp|mail.*(fail|disabled)/i.test(message)) return 'Non riesco a inviare l’email in questo momento. Riprova più tardi.'
-  if (code === 400 && /email/i.test(message)) return 'Indirizzo email non valido.'
-  return message
+  const code = (e as { code?: string }).code ?? ''
+  if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return ''
+  if (code === 'auth/popup-blocked') return 'Il browser ha bloccato la finestra di accesso. Consenti i popup per questo sito o usa il link via email.'
+  if (code === 'auth/too-many-requests' || code === 'auth/quota-exceeded') return 'Troppi tentativi. Aspetta un minuto e riprova.'
+  if (code === 'auth/operation-not-allowed') return 'Questo metodo di accesso non è ancora attivo. Usa il link via email.'
+  if (code === 'auth/unauthorized-domain' || code === 'auth/unauthorized-continue-uri') return 'Questo indirizzo non è autorizzato per l’accesso. Contatta l’assistenza.'
+  if (code === 'auth/account-exists-with-different-credential') return 'Esiste già un account con questa email: accedi con il metodo usato la prima volta.'
+  if (code === 'auth/invalid-email' || code === 'auth/missing-email') return 'Indirizzo email non valido.'
+  if (code === 'auth/network-request-failed') return 'Connessione assente. Controlla la rete e riprova.'
+  return e instanceof Error ? e.message : String(e)
 }
 
 export default function Login({ initialError = '', deletionMode = false }: { initialError?: string; deletionMode?: boolean }) {
@@ -57,10 +61,10 @@ export default function Login({ initialError = '', deletionMode = false }: { ini
   const [error, setError] = useState(initialError)
   const returnTo = `${window.location.origin}${deletionMode ? '/delete-account' : '/'}`
 
-  const signInWith = (provider: AuthProvider) => {
+  const signInWith = async (provider: AuthProvider) => {
     setError('')
     try {
-      account.createOAuth2Token({ provider: OAUTH[provider], success: returnTo, failure: `${returnTo}?error=oauth` })
+      await signInWithPopup(auth, OAUTH[provider]())
     } catch (e) {
       setError(friendly(e))
     }
@@ -71,7 +75,9 @@ export default function Login({ initialError = '', deletionMode = false }: { ini
     setError('')
     setState('sending')
     try {
-      await account.createMagicURLToken({ userId: ID.unique(), email: email.trim(), url: returnTo })
+      const address = email.trim()
+      await sendSignInLinkToEmail(auth, address, { url: returnTo, handleCodeInApp: true })
+      localStorage.setItem(EMAIL_FOR_SIGN_IN, address)
       setState('sent')
     } catch (err) {
       setError(friendly(err))

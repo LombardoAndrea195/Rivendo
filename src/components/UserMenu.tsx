@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { User } from '../appwrite'
+import type { User } from '../firebase'
 
 interface Props {
   user: User
@@ -10,7 +10,7 @@ interface Props {
 export default function UserMenu({ user, onSettings, onSignOut }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const name = user.name || user.email || 'Account'
+  const name = user.displayName || user.email || 'Account'
 
   useEffect(() => {
     if (!open) return
