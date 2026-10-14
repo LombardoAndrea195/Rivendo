@@ -21,11 +21,11 @@ Apri <http://localhost:5173>. Non serve configurare nulla: per l'AI incolla nell
 
 ## Banner pubblicitari
 
-Copia `.env.example` in `.env.production.local` e inserisci il codice editore AdSense (`ca-pub-…`) e gli id dei tre spazi. Per gli utenti europei Google richiede un banner di consenso cookie certificato (per esempio quello di AdSense, "Privacy e messaggi"), e privacy e termini vanno completati con i dati del titolare.
+Copia `.env.example` (in locale) o imposta su Render le variabili con il codice editore AdSense (`ca-pub-…`) e gli id dei tre spazi. Per gli utenti europei Google richiede un banner di consenso cookie certificato (per esempio quello di AdSense, "Privacy e messaggi"), e privacy e termini vanno completati con i dati del titolare.
 
 ## Pubblicazione
 
-`npm run deploy` crea il sito e lo pubblica su Cloudflare Pages (serve `npx wrangler login` la prima volta).
+Il sito va su Render con `render.yaml`. Passaggi, AdSense e come scaricare il codice: **[PUBBLICAZIONE.md](./PUBBLICAZIONE.md)**.
 
 ## Struttura
 
@@ -37,4 +37,4 @@ Copia `.env.example` in `.env.production.local` e inserisci il codice editore Ad
 | `src/ai.ts` | Analisi delle foto con Gemini/OpenAI, con tentativi e modelli di riserva |
 | `src/fees.ts` | Commissioni delle piattaforme, con fonti e data di verifica |
 | `src/components/PublicPage.tsx` | Privacy e termini |
-| `public/_headers` | Intestazioni di sicurezza per Cloudflare Pages |
+| `render.yaml` | Configurazione Render: build, intestazioni di sicurezza, variabili |

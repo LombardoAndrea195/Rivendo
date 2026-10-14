@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: rivendo
+    runtime: static
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' data: https://generativelanguage.googleapis.com https://api.openai.com https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://fundingchoicesmessages.google.com; frame-src https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+      - path: /*
+        name: X-Content-Type-Options
+        value: "nosniff"
+      - path: /*
+        name: Referrer-Policy
+        value: "strict-origin-when-cross-origin"
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(self), geolocation=(), microphone=()"
+      - path: /*
+        name: Strict-Transport-Security
+        value: "max-age=63072000; includeSubDomains"
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_ADSENSE_CLIENT
+        sync: false
+      - key: VITE_AD_SLOT_TOP
+        sync: false
+      - key: VITE_AD_SLOT_SIDE
+        sync: false
+      - key: VITE_AD_SLOT_BOTTOM
+        sync: false
+      - key: VITE_LEGAL_OPERATOR_NAME
+        sync: false
+      - key: VITE_LEGAL_OPERATOR_ADDRESS
+        sync: false
+      - key: VITE_LEGAL_VAT_NUMBER
+        sync: false
+      - key: VITE_SUPPORT_EMAIL
+        sync: false
+      - key: VITE_PRIVACY_EMAIL
+        sync: false
