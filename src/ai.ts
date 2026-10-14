@@ -1,5 +1,4 @@
 import { splitDataUrl } from './image'
-import { photoDataUrl } from './photos'
 import type { Settings } from './settings'
 import type { Condition, Item, PriceEstimate } from './types'
 
@@ -110,18 +109,18 @@ async function callOpenAI(s: Settings, model: string, text: string, photos: stri
 function friendly(e: unknown) {
   if (e instanceof SyntaxError) return new Error('La risposta dell’AI non era leggibile. Riprova.')
   if (!(e instanceof AiError)) return e instanceof Error ? e : new Error(String(e))
-  if (e.status === 400 && /api key/i.test(e.message)) return new Error('Chiave API non valida: controllala in Impostazioni.')
-  if (e.status === 401 || e.status === 403) return new Error('Chiave API non valida o senza permessi: controllala in Impostazioni.')
+  if (e.status === 400 && /api key/i.test(e.message)) return new Error('Chiave API non valida: controllala qui sopra.')
+  if (e.status === 401 || e.status === 403) return new Error('Chiave API non valida o senza permessi: controllala qui sopra.')
   if (e.status === 429) return new Error('Hai superato il limite di richieste del piano gratuito. Aspetta un minuto e riprova.')
   if (RETRYABLE.has(e.status)) return new Error('I server dell’AI sono sovraccarichi in questo momento. Riprova tra qualche minuto.')
   return new Error(e.message)
 }
 
 export async function analyzeItem(s: Settings, item: Item, onStatus?: (msg: string) => void): Promise<AiResult> {
-  if (!s.apiKey) throw new Error('Aggiungi una chiave API nelle Impostazioni per usare l’AI.')
+  if (!s.apiKey) throw new Error('Inserisci la tua chiave AI qui sopra.')
   if (!item.photos.length) throw new Error('Aggiungi almeno una foto.')
   const text = PROMPT + contextFor(item)
-  const photos = await Promise.all(item.photos.slice(0, 4).map(photoDataUrl))
+  const photos = item.photos.slice(0, 4)
   const call = s.provider === 'gemini' ? callGemini : callOpenAI
   const models = s.provider === 'gemini' ? [...new Set([s.model, ...GEMINI_FALLBACKS])] : [s.model]
 

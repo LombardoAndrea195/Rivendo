@@ -1,5 +1,6 @@
-import { photoBlob } from './photos'
 import type { Platform } from './types'
+
+const photoBlob = async (dataUrl: string) => (await fetch(dataUrl)).blob()
 
 export const SELL_URLS: Partial<Record<Platform, string>> = {
   vinted: 'https://www.vinted.it/items/new',

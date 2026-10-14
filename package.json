@@ -5,16 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "offline": "PATH=\"/opt/homebrew/opt/openjdk@21/bin:$PATH\" npx -y firebase-tools emulators:exec --project demo-rivendo --import .emulator-data --export-on-exit --ui \"VITE_FIREBASE_EMULATORS=true vite\"",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name rivendo --branch main",
-    "firebase:rules": "npx -y firebase-tools deploy --only firestore:rules,storage"
+    "deploy": "npm run build && wrangler pages deploy dist --project-name rivendo --branch main"
   },
   "dependencies": {
-    "firebase": "^13.0.0",
-    "idb-keyval": "^6.3.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

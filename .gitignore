@@ -15,10 +15,6 @@ dist-ssr
 .env.*
 !.env.example
 .wrangler
-.firebase
-.firebaserc
-.emulator-data
-*-debug.log
 
 # Editor directories and files
 .vscode/*

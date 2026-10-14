@@ -12,12 +12,6 @@ export function platformFee(price: number, platform: Platform, settings: Setting
   return computeFee(price, feeRule(platform, settings.accounts[platform], item?.ebayCategory))
 }
 
-export function profitOf(item: Item, settings: Settings, price = item.soldPrice) {
-  if (price == null) return null
-  const fee = platformFee(price, item.soldPlatform || 'altro', settings, item)
-  return price - fee - (item.purchasePrice ?? 0) - (item.shippingCost ?? 0)
-}
-
 export function negotiationMargin(platform: Platform, settings: Settings) {
   return platform === 'altro' ? 0 : settings.negotiation[platform]
 }
@@ -25,10 +19,6 @@ export function negotiationMargin(platform: Platform, settings: Settings) {
 export function listPrice(target: number, platform: Platform, settings: Settings) {
   const margin = negotiationMargin(platform, settings)
   return margin > 0 ? Math.ceil(target * (1 + margin / 100)) : target
-}
-
-export function daysBetween(from: string | number, to: string | number = Date.now()) {
-  return Math.max(0, Math.round((new Date(to).getTime() - new Date(from).getTime()) / 86_400_000))
 }
 
 const TITLE_LIMIT: Partial<Record<Platform, number>> = { ebay: 80 }

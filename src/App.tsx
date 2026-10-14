@@ -1,67 +1,71 @@
 import { useEffect, useState } from 'react'
-import { isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, signOut as firebaseSignOut } from 'firebase/auth'
-import { auth, EMAIL_FOR_SIGN_IN, isConfigured, type User } from './firebase'
-import Login from './components/Login'
+import AdSlot from './components/AdSlot'
+import Generator from './components/Generator'
 import PublicPage from './components/PublicPage'
-import SetupNeeded from './components/SetupNeeded'
-import Workspace from './components/Workspace'
+import { AiKeyPanel, FeesPanel } from './components/SettingsPanel'
+import { DEFAULT_SETTINGS } from './settings'
+import { newItem } from './types'
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
-// Il link via email va completato una sola volta, anche se l'effetto parte due volte.
-let startup: Promise<string> | null = null
-
-function startSession() {
-  startup ??= (async () => {
-    const href = window.location.href
-    if (!isSignInWithEmailLink(auth, href)) return ''
-    const params = new URLSearchParams(window.location.search)
-    for (const key of ['apiKey', 'oobCode', 'mode', 'lang', 'continueUrl', 'tenantId']) params.delete(key)
-    const rest = params.toString()
-    window.history.replaceState(null, '', window.location.pathname + (rest ? `?${rest}` : ''))
-    const email = localStorage.getItem(EMAIL_FOR_SIGN_IN) || window.prompt('Per completare l’accesso, conferma la tua email:')
-    if (!email) return 'Accesso annullato. Richiedi un nuovo link.'
-    try {
-      await signInWithEmailLink(auth, email.trim(), href)
-      localStorage.removeItem(EMAIL_FOR_SIGN_IN)
-      return ''
-    } catch {
-      return 'Il link di accesso non è valido o è scaduto. Richiedine uno nuovo.'
-    }
-  })()
-  return startup
+const SLOTS = {
+  top: import.meta.env.VITE_AD_SLOT_TOP as string | undefined,
+  side: import.meta.env.VITE_AD_SLOT_SIDE as string | undefined,
+  bottom: import.meta.env.VITE_AD_SLOT_BOTTOM as string | undefined,
 }
 
 export default function App() {
-  const [user, setUser] = useState<User | null | undefined>(isConfigured ? undefined : null)
-  const [authError, setAuthError] = useState('')
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+  const [item, setItem] = useState(newItem)
 
+  const hasWork = item.photos.length > 0 || Boolean(item.title || item.description)
+
+  // Niente viene salvato: avvisa prima di chiudere o ricaricare con un annuncio in corso.
   useEffect(() => {
-    if (!isConfigured) return
-    let alive = true
-    let unsubscribe = () => {}
-    startSession().then((error) => {
-      if (!alive) return
-      setAuthError(error)
-      unsubscribe = onAuthStateChanged(auth, setUser)
-    })
-    return () => {
-      alive = false
-      unsubscribe()
-    }
-  }, [])
-
-  const signOut = () => firebaseSignOut(auth)
+    if (!hasWork) return
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault()
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [hasWork])
 
   if (path === '/privacy') return <PublicPage kind="privacy" />
   if (path === '/terms') return <PublicPage kind="terms" />
 
-  const deletion = path === '/delete-account'
-  if (!isConfigured) return deletion ? <PublicPage kind="delete-account" /> : <SetupNeeded />
-  if (user === undefined) return <div className="splash" aria-label="Caricamento" />
-  if (!user) {
-    if (deletion && !new URLSearchParams(window.location.search).has('login') && !authError) return <PublicPage kind="delete-account" />
-    return <Login initialError={authError} deletionMode={deletion} />
-  }
-  return <Workspace key={user.uid} user={user} onSignOut={signOut} initialView={deletion ? 'settings' : 'inventory'} />
+  return (
+    <div className="shell">
+      <header className="topbar">
+        <div className="brand">
+          <span className="brand-mark" aria-hidden>
+            R
+          </span>
+          Rivendo
+        </div>
+        <span className="muted small topbar-note">Gratis · nessun account · niente viene salvato</span>
+      </header>
+
+      <AdSlot slot={SLOTS.top} className="ad-top" />
+
+      <div className="layout">
+        <main className="content stack">
+          <div className="intro">
+            <h1>Dalla foto all’annuncio in un minuto</h1>
+            <p className="muted">
+              Carica le foto, l’AI scrive titolo, descrizione e prezzo. Copia tutto su Vinted, Subito o eBay. Quando ricarichi la pagina, tutto viene
+              cancellato.
+            </p>
+          </div>
+          <AiKeyPanel settings={settings} onChange={setSettings} />
+          <Generator item={item} onChange={setItem} onReset={() => setItem(newItem())} settings={settings} />
+          <FeesPanel settings={settings} onChange={setSettings} />
+          <AdSlot slot={SLOTS.bottom} className="ad-bottom" />
+        </main>
+        <AdSlot slot={SLOTS.side} className="ad-side" />
+      </div>
+
+      <footer className="legal-links site-foot">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Termini</a>
+      </footer>
+    </div>
+  )
 }
