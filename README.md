@@ -21,6 +21,19 @@ npm run dev
 
 Apri <http://localhost:5173>. `localhost` è già tra i domini autorizzati di Firebase Authentication.
 
+### Prova offline, senza progetto Firebase
+
+```bash
+npm run offline
+```
+
+Avvia gli emulatori Firebase (login, database e foto) e l'app su <http://localhost:5173>: niente cloud e niente deploy. Richiede Java 21 (`brew install openjdk@21`).
+
+- **Accesso:** "Continua con Google" apre un finto selettore di account. Il link via email non viene spedito: lo trovi nel terminale.
+- **Dati:** vengono salvati in `.emulator-data/` alla chiusura (Ctrl+C) e ricaricati all'avvio successivo.
+- **Pannello emulatori:** <http://localhost:4000>, per vedere utenti, documenti e foto.
+- **AI:** l'analisi delle foto contatta comunque Gemini/OpenAI se inserisci una chiave nelle impostazioni.
+
 ## Pubblicazione
 
 Vedi **[DEPLOY.md](./DEPLOY.md)** per la guida passo passo: Firebase e Cloudflare Pages.

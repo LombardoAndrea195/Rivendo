@@ -17,6 +17,8 @@ dist-ssr
 .wrangler
 .firebase
 .firebaserc
+.emulator-data
+*-debug.log
 
 # Editor directories and files
 .vscode/*

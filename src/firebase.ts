@@ -1,9 +1,20 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, type User as FirebaseUser } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore/lite'
-import { getStorage } from 'firebase/storage'
+import { connectAuthEmulator, getAuth, type User as FirebaseUser } from 'firebase/auth'
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore/lite'
+import { connectStorageEmulator, getStorage } from 'firebase/storage'
 
-const config = {
+// Modalità offline (`npm run offline`): tutto gira negli emulatori locali, nessun progetto Firebase reale.
+const useEmulators = import.meta.env.VITE_FIREBASE_EMULATORS === 'true'
+
+const emulatorConfig = {
+  apiKey: 'demo-key',
+  authDomain: 'demo-rivendo.firebaseapp.com',
+  projectId: 'demo-rivendo',
+  storageBucket: 'demo-rivendo.appspot.com',
+  appId: 'demo-app',
+}
+
+const config = useEmulators ? emulatorConfig : {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined,
@@ -18,6 +29,12 @@ export const auth = getAuth(app)
 auth.languageCode = 'it'
 export const db = getFirestore(app)
 export const storage = getStorage(app)
+
+if (useEmulators) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+  connectFirestoreEmulator(db, '127.0.0.1', 8080)
+  connectStorageEmulator(storage, '127.0.0.1', 9199)
+}
 
 export type User = FirebaseUser
 
