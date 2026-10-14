@@ -1,25 +1,14 @@
 import { useEffect, useRef } from 'react'
 
-// Configura in .env.production.local: VITE_ADSENSE_CLIENT (ca-pub-…) e gli id degli spazi VITE_AD_SLOT_*.
+// Configura gli id degli spazi con VITE_AD_SLOT_* (su Render: Environment).
 // Senza configurazione viene mostrato un segnaposto, utile per vedere dove andranno i banner.
-const CLIENT = import.meta.env.VITE_ADSENSE_CLIENT as string | undefined
+// Lo script AdSense è caricato in index.html, con lo stesso codice editore.
+const CLIENT = (import.meta.env.VITE_ADSENSE_CLIENT as string | undefined) || 'ca-pub-7576464672691797'
 
 declare global {
   interface Window {
     adsbygoogle?: unknown[]
   }
-}
-
-let scriptAdded = false
-
-function loadScript() {
-  if (scriptAdded || !CLIENT) return
-  scriptAdded = true
-  const s = document.createElement('script')
-  s.async = true
-  s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${CLIENT}`
-  s.crossOrigin = 'anonymous'
-  document.head.appendChild(s)
 }
 
 export default function AdSlot({ slot, className = '' }: { slot?: string; className?: string }) {
@@ -28,7 +17,6 @@ export default function AdSlot({ slot, className = '' }: { slot?: string; classN
 
   useEffect(() => {
     if (!active || ref.current?.dataset.adsbygoogleStatus) return
-    loadScript()
     ;(window.adsbygoogle ??= []).push({})
   }, [active])
 
