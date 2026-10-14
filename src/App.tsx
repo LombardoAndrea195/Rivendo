@@ -18,7 +18,7 @@ export default function App() {
   const [remember, setRemember] = useState(() => rememberedKey() != null)
   const [settings, setSettings] = useState<Settings>(() => {
     const saved = rememberedKey()
-    return saved ? { ...DEFAULT_SETTINGS, ...saved, model: DEFAULT_MODELS[saved.provider] } : DEFAULT_SETTINGS
+    return saved ? { ...DEFAULT_SETTINGS, ...saved, model: saved.model || DEFAULT_MODELS[saved.provider] } : DEFAULT_SETTINGS
   })
 
   const updateSettings = (s: Settings) => {

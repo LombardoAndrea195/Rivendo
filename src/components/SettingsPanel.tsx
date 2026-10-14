@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FEES_CHECKED, feeRule, type AccountType, type FeePlatform } from '../fees'
-import { DEFAULT_MODELS, type AiProvider, type Settings } from '../settings'
+import { DEFAULT_MODELS, MODEL_OPTIONS, fetchModels, type AiProvider, type Settings } from '../settings'
 
 const FEE_PLATFORMS: { id: FeePlatform; label: string }[] = [
   { id: 'vinted', label: 'Vinted' },
@@ -62,15 +62,92 @@ export function AiKeyPanel({ settings, onChange, remember, onRemember }: Props &
           Ricorda su questo dispositivo <span className="muted small">— non usarlo su computer condivisi</span>
         </span>
       </label>
-      <details>
-        <summary className="muted small">Modello avanzato</summary>
-        <label className="field">
-          <span className="field-label">
-            Modello <span className="muted">predefinito: {DEFAULT_MODELS[settings.provider]}</span>
-          </span>
-          <input className="input" value={settings.model} onChange={(e) => onChange({ ...settings, model: e.target.value.trim() })} />
-        </label>
-      </details>
+      <ModelPicker key={settings.provider} settings={settings} onChange={onChange} />
+    </div>
+  )
+}
+
+const CUSTOM = '__custom__'
+
+function ModelPicker({ settings, onChange }: Props) {
+  const curated = MODEL_OPTIONS[settings.provider]
+  const [fetched, setFetched] = useState<{ provider: AiProvider; ids: string[] } | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [custom, setCustom] = useState(false)
+
+  const fetchedIds = fetched?.provider === settings.provider ? fetched.ids : []
+  const extra = [...new Set([...fetchedIds, ...(custom ? [] : [settings.model])])].filter((id) => id && !curated.some((m) => m.id === id))
+  const showCustom = custom
+  const note = curated.find((m) => m.id === settings.model)?.note
+
+  const load = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      setFetched({ provider: settings.provider, ids: await fetchModels(settings.provider, settings.apiKey) })
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Errore imprevisto')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="stack">
+      <label className="field">
+        <span className="field-label">
+          Modello
+          {note && !showCustom && <span className="muted">{note}</span>}
+        </span>
+        <div className="input-row">
+          <select
+            className="input"
+            value={showCustom ? CUSTOM : settings.model}
+            onChange={(e) => {
+              const v = e.target.value
+              setCustom(v === CUSTOM)
+              if (v !== CUSTOM) onChange({ ...settings, model: v })
+            }}
+          >
+            <optgroup label="Consigliati">
+              {curated.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))}
+            </optgroup>
+            {extra.length > 0 && (
+              <optgroup label={fetchedIds.length ? "Altri disponibili con la tua chiave" : "Altri"}>
+                {extra.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            <option value={CUSTOM}>Altro: scrivi il nome…</option>
+          </select>
+          <button className="btn btn-ghost" onClick={load} disabled={!settings.apiKey || loading} title={settings.apiKey ? '' : 'Inserisci prima la chiave'}>
+            {loading ? 'Carico…' : 'Mostra tutti'}
+          </button>
+        </div>
+      </label>
+      {showCustom && (
+        <input
+          className="input"
+          aria-label="Nome del modello"
+          value={settings.model}
+          onChange={(e) => onChange({ ...settings, model: e.target.value.trim() })}
+          placeholder={DEFAULT_MODELS[settings.provider]}
+        />
+      )}
+      {error && (
+        <p className="error small" role="alert">
+          {error}
+        </p>
+      )}
+      {fetched?.provider === settings.provider && !fetchedIds.some((id) => !curated.some((m) => m.id === id)) && !error && <p className="muted small">Nessun altro modello adatto trovato.</p>}
     </div>
   )
 }
