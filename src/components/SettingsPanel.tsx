@@ -18,13 +18,15 @@ interface Props {
   onChange: (s: Settings) => void
 }
 
-export function AiKeyPanel({ settings, onChange }: Props) {
+export function AiKeyPanel({ settings, onChange, remember, onRemember }: Props & { remember: boolean; onRemember: (on: boolean) => void }) {
   const [showKey, setShowKey] = useState(false)
   return (
     <div className="panel">
       <h2>Chiave AI</h2>
       <p className="muted small">
-        La chiave resta solo in questa pagina: non viene salvata da nessuna parte e sparisce quando ricarichi. Viene inviata direttamente al fornitore scelto.
+        {remember
+          ? 'La chiave è ricordata solo in questo browser: non viene mai inviata al sito, solo direttamente al fornitore scelto.'
+          : 'La chiave resta solo in questa pagina: non viene salvata da nessuna parte e sparisce quando ricarichi. Viene inviata direttamente al fornitore scelto.'}
       </p>
       <div className="segmented" role="radiogroup" aria-label="Fornitore AI">
         {(['gemini', 'openai'] as AiProvider[]).map((p) => (
@@ -53,6 +55,12 @@ export function AiKeyPanel({ settings, onChange }: Props) {
             {showKey ? 'Nascondi' : 'Mostra'}
           </button>
         </div>
+      </label>
+      <label className="check">
+        <input type="checkbox" checked={remember} onChange={(e) => onRemember(e.target.checked)} />
+        <span>
+          Ricorda su questo dispositivo <span className="muted small">— non usarlo su computer condivisi</span>
+        </span>
       </label>
       <details>
         <summary className="muted small">Modello avanzato</summary>

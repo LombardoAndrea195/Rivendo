@@ -5,7 +5,7 @@ Strumento web gratuito per chi rivende oggetti usati su Vinted, Subito ed eBay.
 - **Foto → annuncio con AI:** titolo, descrizione, marca, taglia, condizioni e stima del prezzo.
 - **Testi pronti per ogni piattaforma**, con pulsanti per copiare e aprire la pagina "Vendi".
 - **Prezzo con margine di trattativa** e quanto ti resta dopo le commissioni di ogni piattaforma.
-- **Nessun account e nessun salvataggio:** tutto resta nella pagina aperta e sparisce quando la ricarichi. Anche la chiave AI dell'utente resta solo in memoria.
+- **Nessun account e nessun salvataggio:** tutto resta nella pagina aperta e sparisce quando la ricarichi. Anche la chiave AI resta solo in memoria, a meno che l'utente non scelga "Ricorda su questo dispositivo" (salvata solo nel suo browser).
 - **Spazi per banner** (Google AdSense) in alto, a lato e in fondo.
 
 La versione precedente, con account e dati salvati su Firebase, è nel branch `dev`.

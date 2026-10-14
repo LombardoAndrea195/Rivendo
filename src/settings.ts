@@ -22,6 +22,23 @@ export const DEFAULT_MODELS: Record<AiProvider, string> = {
   openai: 'gpt-5-mini',
 }
 
+// Solo se l'utente lo chiede, la chiave resta nel suo browser: non arriva mai al sito.
+const KEY_STORAGE = 'rivendo:api-key'
+
+export function rememberedKey(): { provider: AiProvider; apiKey: string } | null {
+  try {
+    const raw = localStorage.getItem(KEY_STORAGE)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+export function rememberKey(s: Settings | null) {
+  if (s) localStorage.setItem(KEY_STORAGE, JSON.stringify({ provider: s.provider, apiKey: s.apiKey }))
+  else localStorage.removeItem(KEY_STORAGE)
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   provider: 'gemini',
   apiKey: '',

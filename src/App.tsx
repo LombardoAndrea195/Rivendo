@@ -3,7 +3,7 @@ import AdSlot from './components/AdSlot'
 import Generator from './components/Generator'
 import PublicPage from './components/PublicPage'
 import { AiKeyPanel, FeesPanel } from './components/SettingsPanel'
-import { DEFAULT_SETTINGS } from './settings'
+import { DEFAULT_MODELS, DEFAULT_SETTINGS, rememberedKey, rememberKey, type Settings } from './settings'
 import { newItem } from './types'
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
@@ -15,7 +15,21 @@ const SLOTS = {
 }
 
 export default function App() {
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+  const [remember, setRemember] = useState(() => rememberedKey() != null)
+  const [settings, setSettings] = useState<Settings>(() => {
+    const saved = rememberedKey()
+    return saved ? { ...DEFAULT_SETTINGS, ...saved, model: DEFAULT_MODELS[saved.provider] } : DEFAULT_SETTINGS
+  })
+
+  const updateSettings = (s: Settings) => {
+    setSettings(s)
+    if (remember) rememberKey(s)
+  }
+
+  const toggleRemember = (on: boolean) => {
+    setRemember(on)
+    rememberKey(on ? settings : null)
+  }
   const [item, setItem] = useState(newItem)
 
   const hasWork = item.photos.length > 0 || Boolean(item.title || item.description)
@@ -54,9 +68,9 @@ export default function App() {
               cancellato.
             </p>
           </div>
-          <AiKeyPanel settings={settings} onChange={setSettings} />
+          <AiKeyPanel settings={settings} onChange={updateSettings} remember={remember} onRemember={toggleRemember} />
           <Generator item={item} onChange={setItem} onReset={() => setItem(newItem())} settings={settings} />
-          <FeesPanel settings={settings} onChange={setSettings} />
+          <FeesPanel settings={settings} onChange={updateSettings} />
           <AdSlot slot={SLOTS.bottom} className="ad-bottom" />
         </main>
         <AdSlot slot={SLOTS.side} className="ad-side" />

@@ -52,6 +52,7 @@ export default function PublicPage({ kind }: { kind: PageKind }) {
                     <p>Contatto privacy: <Contact email={legalInfo.privacyEmail} />. Assistenza: <Contact email={legalInfo.supportEmail} />.</p>
                     <h2>Nessun account, nessun archivio</h2>
                     <p>Rivendo non richiede registrazione e non conserva foto, testi, prezzi o chiavi API. Tutto ciò che inserisci resta nella memoria della pagina aperta nel tuo browser e viene cancellato quando la ricarichi o la chiudi. Il titolare non riceve né conserva questi contenuti.</p>
+                    <p>Solo se attivi “Ricorda su questo dispositivo”, la chiave API e il fornitore scelto vengono salvati nel local storage del tuo browser, per non doverli reinserire. Restano sul tuo dispositivo, non vengono inviati al sito e li cancelli togliendo la spunta o svuotando i dati del sito nel browser.</p>
                     <h2>Funzione AI</h2>
                     <p>Quando premi “Genera annuncio”, fino a quattro foto e le note inserite vengono inviate direttamente dal tuo browser a Google Gemini o a OpenAI, usando la chiave API che hai inserito tu. Il prezzo di acquisto non viene inviato. Per quei dati si applicano le condizioni e l’informativa del fornitore scelto.</p>
                     <h2>Hosting</h2>
