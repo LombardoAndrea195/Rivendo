@@ -6,6 +6,13 @@
   const normalise = (value) => (value || '').toLowerCase().replace(/\s+/g, ' ').trim()
 
   const setNativeValue = (element, value) => {
+    if (element.isContentEditable) {
+      element.textContent = value
+      element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: value }))
+      element.dispatchEvent(new Event('change', { bubbles: true }))
+      element.dispatchEvent(new Event('blur', { bubbles: true }))
+      return
+    }
     const prototype = element instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype
     const setter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set
     setter?.call(element, value)
@@ -17,7 +24,7 @@
   const visible = (element) => Boolean(element?.offsetParent)
 
   const fieldFor = (labels) => {
-    const candidates = [...document.querySelectorAll('input:not([type="hidden"]), textarea')].filter(visible)
+    const candidates = [...document.querySelectorAll('input:not([type="hidden"]), textarea, [contenteditable="true"]')].filter(visible)
     return candidates.find((field) => {
       const aria = field.getAttribute('aria-label') || ''
       const placeholder = field.getAttribute('placeholder') || ''
@@ -28,7 +35,24 @@
     })
   }
 
-  const fillTextFields = (data) => {
+  const openField = async (labels) => {
+    const labelSet = labels.map(normalise)
+    const leaves = [...document.querySelectorAll('body *')].filter((element) => {
+      if (!visible(element)) return false
+      const text = normalise(element.textContent)
+      if (!labelSet.includes(text)) return false
+      return ![...element.children].some((child) => labelSet.includes(normalise(child.textContent)))
+    })
+    const label = leaves[0]
+    if (!label) return false
+    const control = label.closest('button, [role="button"], [role="combobox"], [data-testid]') || label.parentElement
+    if (!control) return false
+    control.click()
+    await wait(150)
+    return true
+  }
+
+  const fillTextFields = async (data) => {
     const values = [
       [['titolo', 'title'], data.title],
       [['descrizione', 'description'], data.description],
@@ -37,7 +61,12 @@
     let count = 0
     for (const [labels, value] of values) {
       if (!value) continue
-      const field = fieldFor(labels)
+      let field = fieldFor(labels)
+      if (!field) {
+        // Vinted mostra Titolo e Descrizione come righe cliccabili finché l’editor non viene aperto.
+        await openField(labels)
+        field = fieldFor(labels)
+      }
       if (field) {
         setNativeValue(field, value)
         count += 1
@@ -95,7 +124,7 @@
     try {
       const data = providedData || (await getTransfer())
       if (!data) return false
-      let count = fillTextFields(data)
+      let count = await fillTextFields(data)
       for (const [labels, value] of [
         [['marca', 'brand'], data.brand],
         [['taglia', 'misura', 'size'], data.size],

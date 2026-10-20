@@ -7,41 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F7A77FB30875B9100F53A45 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7A77FA30875B9100F53A45 /* AppDelegate.swift */; };
-		5F7A77FF30875B9100F53A45 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A77FE30875B9100F53A45 /* Base */; };
-		5F7A780130875B9100F53A45 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A780030875B9100F53A45 /* Icon.png */; };
-		5F7A780330875B9100F53A45 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A780230875B9100F53A45 /* Style.css */; };
-		5F7A780530875B9100F53A45 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A780430875B9100F53A45 /* Script.js */; };
-		5F7A780730875B9100F53A45 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7A780630875B9100F53A45 /* ViewController.swift */; };
-		5F7A780A30875B9100F53A45 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A780930875B9100F53A45 /* Base */; };
-		5F7A780C30875B9300F53A45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A780B30875B9300F53A45 /* Assets.xcassets */; };
-		5F7A781530875B9300F53A45 /* Rivendo per Vinted Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5F7A781430875B9300F53A45 /* Rivendo per Vinted Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		5F7A781A30875B9300F53A45 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7A781930875B9300F53A45 /* SafariWebExtensionHandler.swift */; };
-		5F7A782C30875B9300F53A45 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A782730875B9300F53A45 /* popup.js */; };
-		5F7A782D30875B9300F53A45 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A782830875B9300F53A45 /* popup.html */; };
-		5F7A782E30875B9300F53A45 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A782930875B9300F53A45 /* README.md */; };
-		5F7A782F30875B9300F53A45 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A782A30875B9300F53A45 /* manifest.json */; };
-		5F7A783030875B9300F53A45 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7A782B30875B9300F53A45 /* content.js */; };
+		5F8DD82D30875D80006C7217 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DD82C30875D80006C7217 /* AppDelegate.swift */; };
+		5F8DD83130875D80006C7217 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD83030875D80006C7217 /* Base */; };
+		5F8DD83330875D80006C7217 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD83230875D80006C7217 /* Icon.png */; };
+		5F8DD83530875D80006C7217 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD83430875D80006C7217 /* Style.css */; };
+		5F8DD83730875D80006C7217 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD83630875D80006C7217 /* Script.js */; };
+		5F8DD83930875D80006C7217 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DD83830875D80006C7217 /* ViewController.swift */; };
+		5F8DD83C30875D80006C7217 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD83B30875D80006C7217 /* Base */; };
+		5F8DD83E30875D82006C7217 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD83D30875D82006C7217 /* Assets.xcassets */; };
+		5F8DD84730875D82006C7217 /* Rivendo per Vinted Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5F8DD84630875D82006C7217 /* Rivendo per Vinted Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5F8DD84C30875D82006C7217 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DD84B30875D82006C7217 /* SafariWebExtensionHandler.swift */; };
+		5F8DD85E30875D82006C7217 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD85930875D82006C7217 /* popup.js */; };
+		5F8DD85F30875D82006C7217 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD85A30875D82006C7217 /* popup.html */; };
+		5F8DD86030875D82006C7217 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD85B30875D82006C7217 /* README.md */; };
+		5F8DD86130875D82006C7217 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD85C30875D82006C7217 /* manifest.json */; };
+		5F8DD86230875D82006C7217 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F8DD85D30875D82006C7217 /* content.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5F7A781630875B9300F53A45 /* PBXContainerItemProxy */ = {
+		5F8DD84830875D82006C7217 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5F7A77EF30875B9100F53A45 /* Project object */;
+			containerPortal = 5F8DD82130875D80006C7217 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 5F7A781330875B9300F53A45;
+			remoteGlobalIDString = 5F8DD84530875D82006C7217;
 			remoteInfo = "Rivendo per Vinted Extension";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		5F7A782230875B9300F53A45 /* Embed Foundation Extensions */ = {
+		5F8DD85430875D82006C7217 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				5F7A781530875B9300F53A45 /* Rivendo per Vinted Extension.appex in Embed Foundation Extensions */,
+				5F8DD84730875D82006C7217 /* Rivendo per Vinted Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -49,38 +49,38 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5F7A77F730875B9100F53A45 /* Rivendo per Vinted.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rivendo per Vinted.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F7A77FA30875B9100F53A45 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		5F7A77FE30875B9100F53A45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
-		5F7A780030875B9100F53A45 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		5F7A780230875B9100F53A45 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
-		5F7A780430875B9100F53A45 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
-		5F7A780630875B9100F53A45 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		5F7A780930875B9100F53A45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5F7A780B30875B9300F53A45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5F7A780D30875B9300F53A45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5F7A780E30875B9300F53A45 /* Rivendo_per_Vinted.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rivendo_per_Vinted.entitlements; sourceTree = "<group>"; };
-		5F7A780F30875B9300F53A45 /* Rivendo per Vinted.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Rivendo per Vinted.entitlements"; sourceTree = "<group>"; };
-		5F7A781430875B9300F53A45 /* Rivendo per Vinted Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Rivendo per Vinted Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F7A781930875B9300F53A45 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
-		5F7A781B30875B9300F53A45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5F7A781C30875B9300F53A45 /* Rivendo_per_Vinted_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rivendo_per_Vinted_Extension.entitlements; sourceTree = "<group>"; };
-		5F7A782730875B9300F53A45 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = Resources/popup.js; sourceTree = "<group>"; };
-		5F7A782830875B9300F53A45 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = Resources/popup.html; sourceTree = "<group>"; };
-		5F7A782930875B9300F53A45 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = Resources/README.md; sourceTree = "<group>"; };
-		5F7A782A30875B9300F53A45 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
-		5F7A782B30875B9300F53A45 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.js; path = Resources/content.js; sourceTree = "<group>"; };
+		5F8DD82930875D80006C7217 /* Rivendo per Vinted.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rivendo per Vinted.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F8DD82C30875D80006C7217 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5F8DD83030875D80006C7217 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
+		5F8DD83230875D80006C7217 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		5F8DD83430875D80006C7217 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		5F8DD83630875D80006C7217 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		5F8DD83830875D80006C7217 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5F8DD83B30875D80006C7217 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5F8DD83D30875D82006C7217 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5F8DD83F30875D82006C7217 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F8DD84030875D82006C7217 /* Rivendo_per_Vinted.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rivendo_per_Vinted.entitlements; sourceTree = "<group>"; };
+		5F8DD84130875D82006C7217 /* Rivendo per Vinted.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Rivendo per Vinted.entitlements"; sourceTree = "<group>"; };
+		5F8DD84630875D82006C7217 /* Rivendo per Vinted Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Rivendo per Vinted Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F8DD84B30875D82006C7217 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		5F8DD84D30875D82006C7217 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F8DD84E30875D82006C7217 /* Rivendo_per_Vinted_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rivendo_per_Vinted_Extension.entitlements; sourceTree = "<group>"; };
+		5F8DD85930875D82006C7217 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = Resources/popup.js; sourceTree = "<group>"; };
+		5F8DD85A30875D82006C7217 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = Resources/popup.html; sourceTree = "<group>"; };
+		5F8DD85B30875D82006C7217 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = Resources/README.md; sourceTree = "<group>"; };
+		5F8DD85C30875D82006C7217 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
+		5F8DD85D30875D82006C7217 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.js; path = Resources/content.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5F7A77F430875B9100F53A45 /* Frameworks */ = {
+		5F8DD82630875D80006C7217 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5F7A781130875B9300F53A45 /* Frameworks */ = {
+		5F8DD84330875D82006C7217 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -90,69 +90,69 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5F7A77EE30875B9100F53A45 = {
+		5F8DD82030875D80006C7217 = {
 			isa = PBXGroup;
 			children = (
-				5F7A77F930875B9100F53A45 /* Rivendo per Vinted */,
-				5F7A781830875B9300F53A45 /* Rivendo per Vinted Extension */,
-				5F7A77F830875B9100F53A45 /* Products */,
+				5F8DD82B30875D80006C7217 /* Rivendo per Vinted */,
+				5F8DD84A30875D82006C7217 /* Rivendo per Vinted Extension */,
+				5F8DD82A30875D80006C7217 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		5F7A77F830875B9100F53A45 /* Products */ = {
+		5F8DD82A30875D80006C7217 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5F7A77F730875B9100F53A45 /* Rivendo per Vinted.app */,
-				5F7A781430875B9300F53A45 /* Rivendo per Vinted Extension.appex */,
+				5F8DD82930875D80006C7217 /* Rivendo per Vinted.app */,
+				5F8DD84630875D82006C7217 /* Rivendo per Vinted Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5F7A77F930875B9100F53A45 /* Rivendo per Vinted */ = {
+		5F8DD82B30875D80006C7217 /* Rivendo per Vinted */ = {
 			isa = PBXGroup;
 			children = (
-				5F7A77FA30875B9100F53A45 /* AppDelegate.swift */,
-				5F7A780630875B9100F53A45 /* ViewController.swift */,
-				5F7A780830875B9100F53A45 /* Main.storyboard */,
-				5F7A780B30875B9300F53A45 /* Assets.xcassets */,
-				5F7A780D30875B9300F53A45 /* Info.plist */,
-				5F7A780E30875B9300F53A45 /* Rivendo_per_Vinted.entitlements */,
-				5F7A780F30875B9300F53A45 /* Rivendo per Vinted.entitlements */,
-				5F7A77FC30875B9100F53A45 /* Resources */,
+				5F8DD82C30875D80006C7217 /* AppDelegate.swift */,
+				5F8DD83830875D80006C7217 /* ViewController.swift */,
+				5F8DD83A30875D80006C7217 /* Main.storyboard */,
+				5F8DD83D30875D82006C7217 /* Assets.xcassets */,
+				5F8DD83F30875D82006C7217 /* Info.plist */,
+				5F8DD84030875D82006C7217 /* Rivendo_per_Vinted.entitlements */,
+				5F8DD84130875D82006C7217 /* Rivendo per Vinted.entitlements */,
+				5F8DD82E30875D80006C7217 /* Resources */,
 			);
 			path = "Rivendo per Vinted";
 			sourceTree = "<group>";
 		};
-		5F7A77FC30875B9100F53A45 /* Resources */ = {
+		5F8DD82E30875D80006C7217 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				5F7A77FD30875B9100F53A45 /* Main.html */,
-				5F7A780030875B9100F53A45 /* Icon.png */,
-				5F7A780230875B9100F53A45 /* Style.css */,
-				5F7A780430875B9100F53A45 /* Script.js */,
+				5F8DD82F30875D80006C7217 /* Main.html */,
+				5F8DD83230875D80006C7217 /* Icon.png */,
+				5F8DD83430875D80006C7217 /* Style.css */,
+				5F8DD83630875D80006C7217 /* Script.js */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		5F7A781830875B9300F53A45 /* Rivendo per Vinted Extension */ = {
+		5F8DD84A30875D82006C7217 /* Rivendo per Vinted Extension */ = {
 			isa = PBXGroup;
 			children = (
-				5F7A782630875B9300F53A45 /* Resources */,
-				5F7A781930875B9300F53A45 /* SafariWebExtensionHandler.swift */,
-				5F7A781B30875B9300F53A45 /* Info.plist */,
-				5F7A781C30875B9300F53A45 /* Rivendo_per_Vinted_Extension.entitlements */,
+				5F8DD85830875D82006C7217 /* Resources */,
+				5F8DD84B30875D82006C7217 /* SafariWebExtensionHandler.swift */,
+				5F8DD84D30875D82006C7217 /* Info.plist */,
+				5F8DD84E30875D82006C7217 /* Rivendo_per_Vinted_Extension.entitlements */,
 			);
 			path = "Rivendo per Vinted Extension";
 			sourceTree = "<group>";
 		};
-		5F7A782630875B9300F53A45 /* Resources */ = {
+		5F8DD85830875D82006C7217 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				5F7A782730875B9300F53A45 /* popup.js */,
-				5F7A782830875B9300F53A45 /* popup.html */,
-				5F7A782930875B9300F53A45 /* README.md */,
-				5F7A782A30875B9300F53A45 /* manifest.json */,
-				5F7A782B30875B9300F53A45 /* content.js */,
+				5F8DD85930875D82006C7217 /* popup.js */,
+				5F8DD85A30875D82006C7217 /* popup.html */,
+				5F8DD85B30875D82006C7217 /* README.md */,
+				5F8DD85C30875D82006C7217 /* manifest.json */,
+				5F8DD85D30875D82006C7217 /* content.js */,
 			);
 			name = Resources;
 			path = "Rivendo per Vinted Extension";
@@ -161,32 +161,32 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5F7A77F630875B9100F53A45 /* Rivendo per Vinted */ = {
+		5F8DD82830875D80006C7217 /* Rivendo per Vinted */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5F7A782330875B9300F53A45 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted" */;
+			buildConfigurationList = 5F8DD85530875D82006C7217 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted" */;
 			buildPhases = (
-				5F7A77F330875B9100F53A45 /* Sources */,
-				5F7A77F430875B9100F53A45 /* Frameworks */,
-				5F7A77F530875B9100F53A45 /* Resources */,
-				5F7A782230875B9300F53A45 /* Embed Foundation Extensions */,
+				5F8DD82530875D80006C7217 /* Sources */,
+				5F8DD82630875D80006C7217 /* Frameworks */,
+				5F8DD82730875D80006C7217 /* Resources */,
+				5F8DD85430875D82006C7217 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5F7A781730875B9300F53A45 /* PBXTargetDependency */,
+				5F8DD84930875D82006C7217 /* PBXTargetDependency */,
 			);
 			name = "Rivendo per Vinted";
 			productName = "Rivendo per Vinted";
-			productReference = 5F7A77F730875B9100F53A45 /* Rivendo per Vinted.app */;
+			productReference = 5F8DD82930875D80006C7217 /* Rivendo per Vinted.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5F7A781330875B9300F53A45 /* Rivendo per Vinted Extension */ = {
+		5F8DD84530875D82006C7217 /* Rivendo per Vinted Extension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5F7A781F30875B9300F53A45 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted Extension" */;
+			buildConfigurationList = 5F8DD85130875D82006C7217 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted Extension" */;
 			buildPhases = (
-				5F7A781030875B9300F53A45 /* Sources */,
-				5F7A781130875B9300F53A45 /* Frameworks */,
-				5F7A781230875B9300F53A45 /* Resources */,
+				5F8DD84230875D82006C7217 /* Sources */,
+				5F8DD84330875D82006C7217 /* Frameworks */,
+				5F8DD84430875D82006C7217 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -194,28 +194,28 @@
 			);
 			name = "Rivendo per Vinted Extension";
 			productName = "Rivendo per Vinted Extension";
-			productReference = 5F7A781430875B9300F53A45 /* Rivendo per Vinted Extension.appex */;
+			productReference = 5F8DD84630875D82006C7217 /* Rivendo per Vinted Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		5F7A77EF30875B9100F53A45 /* Project object */ = {
+		5F8DD82130875D80006C7217 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 1530;
 				TargetAttributes = {
-					5F7A77F630875B9100F53A45 = {
+					5F8DD82830875D80006C7217 = {
 						CreatedOnToolsVersion = 15.3;
 					};
-					5F7A781330875B9300F53A45 = {
+					5F8DD84530875D82006C7217 = {
 						CreatedOnToolsVersion = 15.3;
 					};
 				};
 			};
-			buildConfigurationList = 5F7A77F230875B9100F53A45 /* Build configuration list for PBXProject "Rivendo per Vinted" */;
+			buildConfigurationList = 5F8DD82430875D80006C7217 /* Build configuration list for PBXProject "Rivendo per Vinted" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -223,86 +223,86 @@
 				en,
 				Base,
 			);
-			mainGroup = 5F7A77EE30875B9100F53A45;
-			productRefGroup = 5F7A77F830875B9100F53A45 /* Products */;
+			mainGroup = 5F8DD82030875D80006C7217;
+			productRefGroup = 5F8DD82A30875D80006C7217 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5F7A77F630875B9100F53A45 /* Rivendo per Vinted */,
-				5F7A781330875B9300F53A45 /* Rivendo per Vinted Extension */,
+				5F8DD82830875D80006C7217 /* Rivendo per Vinted */,
+				5F8DD84530875D82006C7217 /* Rivendo per Vinted Extension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		5F7A77F530875B9100F53A45 /* Resources */ = {
+		5F8DD82730875D80006C7217 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F7A780130875B9100F53A45 /* Icon.png in Resources */,
-				5F7A780530875B9100F53A45 /* Script.js in Resources */,
-				5F7A77FF30875B9100F53A45 /* Base in Resources */,
-				5F7A780330875B9100F53A45 /* Style.css in Resources */,
-				5F7A780C30875B9300F53A45 /* Assets.xcassets in Resources */,
-				5F7A780A30875B9100F53A45 /* Base in Resources */,
+				5F8DD83330875D80006C7217 /* Icon.png in Resources */,
+				5F8DD83730875D80006C7217 /* Script.js in Resources */,
+				5F8DD83130875D80006C7217 /* Base in Resources */,
+				5F8DD83530875D80006C7217 /* Style.css in Resources */,
+				5F8DD83E30875D82006C7217 /* Assets.xcassets in Resources */,
+				5F8DD83C30875D80006C7217 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5F7A781230875B9300F53A45 /* Resources */ = {
+		5F8DD84430875D82006C7217 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F7A782F30875B9300F53A45 /* manifest.json in Resources */,
-				5F7A782E30875B9300F53A45 /* README.md in Resources */,
-				5F7A782C30875B9300F53A45 /* popup.js in Resources */,
-				5F7A782D30875B9300F53A45 /* popup.html in Resources */,
-				5F7A783030875B9300F53A45 /* content.js in Resources */,
+				5F8DD86130875D82006C7217 /* manifest.json in Resources */,
+				5F8DD86030875D82006C7217 /* README.md in Resources */,
+				5F8DD85E30875D82006C7217 /* popup.js in Resources */,
+				5F8DD85F30875D82006C7217 /* popup.html in Resources */,
+				5F8DD86230875D82006C7217 /* content.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5F7A77F330875B9100F53A45 /* Sources */ = {
+		5F8DD82530875D80006C7217 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F7A780730875B9100F53A45 /* ViewController.swift in Sources */,
-				5F7A77FB30875B9100F53A45 /* AppDelegate.swift in Sources */,
+				5F8DD83930875D80006C7217 /* ViewController.swift in Sources */,
+				5F8DD82D30875D80006C7217 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5F7A781030875B9300F53A45 /* Sources */ = {
+		5F8DD84230875D82006C7217 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F7A781A30875B9300F53A45 /* SafariWebExtensionHandler.swift in Sources */,
+				5F8DD84C30875D82006C7217 /* SafariWebExtensionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5F7A781730875B9300F53A45 /* PBXTargetDependency */ = {
+		5F8DD84930875D82006C7217 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5F7A781330875B9300F53A45 /* Rivendo per Vinted Extension */;
-			targetProxy = 5F7A781630875B9300F53A45 /* PBXContainerItemProxy */;
+			target = 5F8DD84530875D82006C7217 /* Rivendo per Vinted Extension */;
+			targetProxy = 5F8DD84830875D82006C7217 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		5F7A77FD30875B9100F53A45 /* Main.html */ = {
+		5F8DD82F30875D80006C7217 /* Main.html */ = {
 			isa = PBXVariantGroup;
 			children = (
-				5F7A77FE30875B9100F53A45 /* Base */,
+				5F8DD83030875D80006C7217 /* Base */,
 			);
 			name = Main.html;
 			sourceTree = "<group>";
 		};
-		5F7A780830875B9100F53A45 /* Main.storyboard */ = {
+		5F8DD83A30875D80006C7217 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				5F7A780930875B9100F53A45 /* Base */,
+				5F8DD83B30875D80006C7217 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -310,7 +310,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		5F7A781D30875B9300F53A45 /* Debug */ = {
+		5F8DD84F30875D82006C7217 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -373,7 +373,7 @@
 			};
 			name = Debug;
 		};
-		5F7A781E30875B9300F53A45 /* Release */ = {
+		5F8DD85030875D82006C7217 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -428,7 +428,7 @@
 			};
 			name = Release;
 		};
-		5F7A782030875B9300F53A45 /* Debug */ = {
+		5F8DD85230875D82006C7217 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Rivendo per Vinted Extension/Rivendo_per_Vinted_Extension.entitlements";
@@ -458,7 +458,7 @@
 			};
 			name = Debug;
 		};
-		5F7A782130875B9300F53A45 /* Release */ = {
+		5F8DD85330875D82006C7217 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Rivendo per Vinted Extension/Rivendo_per_Vinted_Extension.entitlements";
@@ -488,7 +488,7 @@
 			};
 			name = Release;
 		};
-		5F7A782430875B9300F53A45 /* Debug */ = {
+		5F8DD85630875D82006C7217 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -524,7 +524,7 @@
 			};
 			name = Debug;
 		};
-		5F7A782530875B9300F53A45 /* Release */ = {
+		5F8DD85730875D82006C7217 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -563,34 +563,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5F7A77F230875B9100F53A45 /* Build configuration list for PBXProject "Rivendo per Vinted" */ = {
+		5F8DD82430875D80006C7217 /* Build configuration list for PBXProject "Rivendo per Vinted" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5F7A781D30875B9300F53A45 /* Debug */,
-				5F7A781E30875B9300F53A45 /* Release */,
+				5F8DD84F30875D82006C7217 /* Debug */,
+				5F8DD85030875D82006C7217 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5F7A781F30875B9300F53A45 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted Extension" */ = {
+		5F8DD85130875D82006C7217 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted Extension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5F7A782030875B9300F53A45 /* Debug */,
-				5F7A782130875B9300F53A45 /* Release */,
+				5F8DD85230875D82006C7217 /* Debug */,
+				5F8DD85330875D82006C7217 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5F7A782330875B9300F53A45 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted" */ = {
+		5F8DD85530875D82006C7217 /* Build configuration list for PBXNativeTarget "Rivendo per Vinted" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5F7A782430875B9300F53A45 /* Debug */,
-				5F7A782530875B9300F53A45 /* Release */,
+				5F8DD85630875D82006C7217 /* Debug */,
+				5F8DD85730875D82006C7217 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 5F7A77EF30875B9100F53A45 /* Project object */;
+	rootObject = 5F8DD82130875D80006C7217 /* Project object */;
 }

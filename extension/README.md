@@ -25,7 +25,7 @@ Apri `about:debugging#/runtime/this-firefox`, scegli **Carica estensione tempora
 
 1. Genera l’annuncio in Rivendo.
 2. Clicca **Pubblica su Vinted**.
-3. In Chrome l’estensione inserisce automaticamente i dati; in Safari e Firefox premi l’icona dell’estensione e **Compila l’annuncio**.
+3. L’estensione inserisce automaticamente i dati. Se dopo alcuni secondi Vinted è ancora vuoto, premi l’icona dell’estensione nel browser e scegli **Compila l’annuncio**.
 4. Aggiungi le foto, completa gli eventuali menu a scelta di Vinted, controlla tutto e premi **Pubblica** personalmente.
 
 Vinted può cambiare i propri campi e componenti: se l’interfaccia cambia, i selettori dell’estensione potrebbero richiedere un aggiornamento.
