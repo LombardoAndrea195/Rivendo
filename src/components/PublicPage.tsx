@@ -71,7 +71,7 @@ export default function PublicPage({ kind }: { kind: PageKind }) {
                     <h2>Funzioni AI e stime</h2>
                     <p>Testi, classificazioni e stime sono generati automaticamente e possono essere inesatti o incompleti. Non costituiscono valutazioni professionali né garanzie di vendita o di prezzo. Verifica sempre descrizioni, condizioni e prezzi prima di pubblicarli. L’uso della tua chiave API e i relativi costi sono a tuo carico.</p>
                     <h2>Servizi di terzi</h2>
-                    <p>Vinted, Subito, eBay, Google Gemini e OpenAI sono servizi indipendenti con condizioni proprie. Rivendo non è affiliata a tali piattaforme e non pubblica automaticamente gli annunci. Non inserire dati personali di terzi nelle foto o nei testi senza averne titolo.</p>
+                    <p>Vinted, Google Gemini e OpenAI sono servizi indipendenti con condizioni proprie. Rivendo non è affiliata a tali servizi e non pubblica automaticamente gli annunci. Non inserire dati personali di terzi nelle foto o nei testi senza averne titolo.</p>
                     <h2>Disponibilità</h2>
                     <p>Il servizio è fornito gratuitamente, così com’è. Poiché nulla viene salvato, copia il tuo annuncio prima di chiudere o ricaricare la pagina.</p>
                     <h2>Titolare e assistenza</h2>

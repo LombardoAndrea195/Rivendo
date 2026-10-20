@@ -1,10 +1,10 @@
 # Rivendo — dalla foto all'annuncio
 
-Strumento web gratuito per chi rivende oggetti usati su Vinted, Subito ed eBay.
+Strumento web gratuito per chi rivende oggetti usati su Vinted.
 
 - **Foto → annuncio con AI:** titolo, descrizione, marca, taglia, condizioni e stima del prezzo.
-- **Testi pronti per ogni piattaforma**, con pulsanti per copiare e aprire la pagina "Vendi".
-- **Prezzo con margine di trattativa** e quanto ti resta dopo le commissioni di ogni piattaforma.
+- **Annuncio pronto per Vinted**, con un pulsante che prepara tutti i dati e apre la pagina di pubblicazione.
+- **Prezzo con margine di trattativa** per Vinted.
 - **Nessun account e nessun salvataggio:** tutto resta nella pagina aperta e sparisce quando la ricarichi. Anche la chiave AI resta solo in memoria, a meno che l'utente non scelga "Ricorda su questo dispositivo" (salvata solo nel suo browser).
 - **Spazi per banner** (Google AdSense) in alto, a lato e in fondo.
 
@@ -32,9 +32,9 @@ Il sito va su Render con `render.yaml`. Passaggi, AdSense e come scaricare il co
 | Percorso | Contenuto |
 |---|---|
 | `src/App.tsx` | Pagina unica: chiave AI, generatore, commissioni, banner |
-| `src/components/Generator.tsx` | Foto, AI, dettagli, prezzo e pubblicazione |
+| `src/components/Generator.tsx` | Foto, AI, dettagli, prezzo e trasferimento verso Vinted |
 | `src/components/AdSlot.tsx` | Spazio pubblicitario AdSense con segnaposto |
 | `src/ai.ts` | Analisi delle foto con Gemini/OpenAI, con tentativi e modelli di riserva |
-| `src/fees.ts` | Commissioni delle piattaforme, con fonti e data di verifica |
+| `src/fees.ts` | Commissioni Vinted, con fonti e data di verifica |
 | `src/components/PublicPage.tsx` | Privacy e termini |
 | `render.yaml` | Configurazione Render: build, intestazioni di sicurezza, variabili |

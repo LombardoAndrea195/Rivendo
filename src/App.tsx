@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import AdSlot from './components/AdSlot'
 import Generator from './components/Generator'
 import PublicPage from './components/PublicPage'
-import { AiKeyPanel, FeesPanel } from './components/SettingsPanel'
+import { AiKeyPanel } from './components/SettingsPanel'
 import { DEFAULT_MODELS, DEFAULT_SETTINGS, rememberedKey, rememberKey, type Settings } from './settings'
 import { newItem } from './types'
 
@@ -64,13 +64,12 @@ export default function App() {
           <div className="intro">
             <h1>Dalla foto all’annuncio in un minuto</h1>
             <p className="muted">
-              Carica le foto, l’AI scrive titolo, descrizione e prezzo. Copia tutto su Vinted, Subito o eBay. Quando ricarichi la pagina, tutto viene
-              cancellato.
+              Carica le foto, l’AI scrive titolo, descrizione e prezzo. Prepariamo tutto per Vinted in un unico passaggio. Quando ricarichi la pagina,
+              tutto viene cancellato.
             </p>
           </div>
           <AiKeyPanel settings={settings} onChange={updateSettings} remember={remember} onRemember={toggleRemember} />
           <Generator item={item} onChange={setItem} onReset={() => setItem(newItem())} settings={settings} />
-          <FeesPanel settings={settings} onChange={updateSettings} />
           <AdSlot slot={SLOTS.bottom} className="ad-bottom" />
         </main>
         <AdSlot slot={SLOTS.side} className="ad-side" />

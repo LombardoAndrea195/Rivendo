@@ -1463,6 +1463,22 @@ textarea.input {
   flex-wrap: wrap;
 }
 
+.vinted-publish {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.75rem 0;
+  padding: 0.9rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+}
+
+.vinted-publish p {
+  margin-top: 0.2rem;
+}
+
 .steps {
   list-style: none;
   margin: 0;
@@ -1511,6 +1527,11 @@ textarea.input {
 }
 
 @media (max-width: 720px) {
+  .vinted-publish {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .step {
     flex-wrap: wrap;
   }

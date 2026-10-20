@@ -1,4 +1,4 @@
-import { CONDITIONS, type Item, type Platform } from './types'
+import { CONDITIONS, type Item } from './types'
 import { computeFee, feeRule } from './fees'
 import type { Settings } from './settings'
 
@@ -7,27 +7,20 @@ export const eur = (n: number | null | undefined) =>
 
 export const conditionLabel = (c: Item['condition']) => CONDITIONS.find((x) => x.id === c)?.label ?? c
 
-export function platformFee(price: number, platform: Platform, settings: Settings, item?: Pick<Item, 'ebayCategory'>) {
-  if (platform === 'altro') return computeFee(price, { tiers: [{ upTo: null, percent: settings.otherFee.percent }], fixed: settings.otherFee.fixed })
-  return computeFee(price, feeRule(platform, settings.accounts[platform], item?.ebayCategory))
+export function platformFee(price: number, settings: Settings) {
+  return computeFee(price, feeRule(settings.accounts.vinted))
 }
 
-export function negotiationMargin(platform: Platform, settings: Settings) {
-  return platform === 'altro' ? 0 : settings.negotiation[platform]
+export function negotiationMargin(settings: Settings) {
+  return settings.negotiation.vinted
 }
 
-export function listPrice(target: number, platform: Platform, settings: Settings) {
-  const margin = negotiationMargin(platform, settings)
+export function listPrice(target: number, settings: Settings) {
+  const margin = negotiationMargin(settings)
   return margin > 0 ? Math.ceil(target * (1 + margin / 100)) : target
 }
 
-const TITLE_LIMIT: Partial<Record<Platform, number>> = { ebay: 80 }
-
-export function titleLimit(p: Platform) {
-  return TITLE_LIMIT[p]
-}
-
-export function buildListing(item: Item, platform: Platform) {
+export function buildListing(item: Item) {
   const title = item.title.trim()
   const details = [
     item.brand && `Marca: ${item.brand}`,
@@ -37,24 +30,8 @@ export function buildListing(item: Item, platform: Platform) {
 
   const tags = item.hashtags.map((t) => t.replace(/^#/, '').replace(/\s+/g, ''))
   const body = item.description.trim()
-  let text: string
-
-  switch (platform) {
-    case 'vinted':
-      text = [body, '', ...details, '', 'Spedisco in 1-2 giorni, imballato con cura.', tags.length ? '\n' + tags.map((t) => `#${t}`).join(' ') : '']
-        .join('\n')
-        .trim()
-      break
-    case 'subito':
-      text = [body, '', ...details.map((d) => `• ${d}`), '', 'Disponibile per spedizione o consegna a mano. Scrivimi per qualsiasi domanda.']
-        .join('\n')
-        .trim()
-      break
-    case 'ebay':
-      text = [body, '', 'DETTAGLI', ...details.map((d) => `- ${d}`), '', 'Spedizione tracciata. Per domande usate i messaggi eBay.'].join('\n').trim()
-      break
-    default:
-      text = [body, '', ...details].join('\n').trim()
-  }
+  const text = [body, '', ...details, '', 'Spedisco in 1-2 giorni, imballato con cura.', tags.length ? '\n' + tags.map((t) => `#${t}`).join(' ') : '']
+    .join('\n')
+    .trim()
   return { title, text }
 }

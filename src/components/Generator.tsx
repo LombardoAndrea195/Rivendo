@@ -1,11 +1,10 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { analyzeItem } from '../ai'
-import { EBAY_PRO_CATEGORIES } from '../fees'
 import { fileToResizedDataUrl } from '../image'
-import { buildListing, eur, listPrice, negotiationMargin, platformFee, titleLimit } from '../listing'
-import { SELL_URLS, canShareFiles, copyText, downloadPhotos, sharePhotos } from '../publish'
+import { buildListing, eur, listPrice, negotiationMargin, platformFee } from '../listing'
+import { VINTED_SELL_URL, canShareFiles, copyText, downloadPhotos, sharePhotos } from '../publish'
 import type { Settings } from '../settings'
-import { CONDITIONS, PLATFORMS, type Condition, type Item, type Platform } from '../types'
+import { CONDITIONS, type Condition, type Item } from '../types'
 
 interface Props {
   item: Item
@@ -18,7 +17,8 @@ export default function Generator({ item, onChange, onReset, settings }: Props) 
   const [busy, setBusy] = useState(false)
   const [aiError, setAiError] = useState('')
   const [aiStatus, setAiStatus] = useState('')
-  const [platform, setPlatform] = useState<Platform>('vinted')
+  const [publishing, setPublishing] = useState(false)
+  const [publishError, setPublishError] = useState('')
   const [dragging, setDragging] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const canShare = useMemo(() => canShareFiles(), [])
@@ -61,12 +61,33 @@ export default function Generator({ item, onChange, onReset, settings }: Props) 
     }
   }
 
-  const listing = buildListing(item, platform)
-  const sellUrl = SELL_URLS[platform]
-  const platformLabel = PLATFORMS.find((p) => p.id === platform)!.label
-  const publishPrice = item.askingPrice != null ? listPrice(item.askingPrice, platform, settings) : null
-  const limit = titleLimit(platform)
+  const listing = buildListing(item)
+  const publishPrice = item.askingPrice != null ? listPrice(item.askingPrice, settings) : null
   const hasContent = item.photos.length > 0 || item.title || item.description
+
+  const publishOnVinted = async () => {
+    setPublishing(true)
+    setPublishError('')
+    try {
+      const transfer = JSON.stringify({
+        version: 1,
+        source: 'rivendo',
+        title: listing.title,
+        description: listing.text,
+        price: publishPrice,
+        brand: item.brand,
+        size: item.size,
+        category: item.category,
+        condition: CONDITIONS.find((c) => c.id === item.condition)?.label ?? item.condition,
+      })
+      await copyText(transfer)
+      window.open(VINTED_SELL_URL, '_blank', 'noopener,noreferrer')
+    } catch {
+      setPublishError('Non riesco a preparare il trasferimento. Copia i dati qui sotto e riprova.')
+    } finally {
+      setPublishing(false)
+    }
+  }
 
   return (
     <div className="generator">
@@ -166,7 +187,7 @@ export default function Generator({ item, onChange, onReset, settings }: Props) 
       </Section>
 
       <Section title="2. Dettagli">
-        <Field label="Titolo" hint={limit ? `${item.title.length}/${limit}` : `${item.title.length}`} warn={!!limit && item.title.length > limit}>
+        <Field label="Titolo" hint={`${item.title.length}`}>
           <input className="input" value={item.title} onChange={(e) => set('title', e.target.value)} placeholder="Es. Giacca Levi’s in jeans taglia M" />
         </Field>
         <Field label="Descrizione">
@@ -208,58 +229,32 @@ export default function Generator({ item, onChange, onReset, settings }: Props) 
             <Money value={item.purchasePrice} onChange={(v) => set('purchasePrice', v)} />
           </Field>
         </div>
-        {settings.accounts.ebay === 'pro' && (
-          <Field label="Categoria eBay" hint="per le commissioni da professionista">
-            <select className="input" value={item.ebayCategory ?? 'altro'} onChange={(e) => set('ebayCategory', e.target.value)}>
-              {EBAY_PRO_CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-        )}
         {item.askingPrice != null && item.askingPrice > 0 && (
           <table className="price-plan">
             <thead>
               <tr>
-                <th scope="col">Piattaforma</th>
-                <th scope="col">Pubblica a</th>
+                <th scope="col">Vinted</th>
+                <th scope="col">Prezzo di pubblicazione</th>
                 <th scope="col">Se scendi a {eur(item.askingPrice)} ti restano</th>
               </tr>
             </thead>
             <tbody>
-              {PLATFORMS.filter((p) => p.id !== 'altro').map((p) => {
-                const margin = negotiationMargin(p.id, settings)
-                const fee = platformFee(item.askingPrice!, p.id, settings, item)
+              {(() => {
+                const margin = negotiationMargin(settings)
+                const fee = platformFee(item.askingPrice!, settings)
                 const net = item.askingPrice! - fee - (item.purchasePrice ?? 0)
-                return (
-                  <tr key={p.id}>
-                    <th scope="row">{p.label}</th>
-                    <td>
-                      <strong>{eur(listPrice(item.askingPrice!, p.id, settings))}</strong>
-                      {margin > 0 && <span className="muted small"> +{margin}%</span>}
-                    </td>
-                    <td>
-                      <strong className={net >= 0 ? 'pos' : 'neg'}>{eur(net)}</strong>
-                      {fee > 0 && <span className="muted small"> (commissioni {eur(fee)})</span>}
-                    </td>
-                  </tr>
-                )
-              })}
+                return <tr>
+                  <th scope="row">Vinted</th>
+                  <td><strong>{eur(listPrice(item.askingPrice!, settings))}</strong>{margin > 0 && <span className="muted small"> +{margin}%</span>}</td>
+                  <td><strong className={net >= 0 ? 'pos' : 'neg'}>{eur(net)}</strong>{fee > 0 && <span className="muted small"> (commissioni {eur(fee)})</span>}</td>
+                </tr>
+              })()}
             </tbody>
           </table>
         )}
       </Section>
 
       <Section title="4. Pubblica">
-        <div className="segmented" role="tablist" aria-label="Piattaforma">
-          {PLATFORMS.map((p) => (
-            <button key={p.id} role="tab" aria-selected={platform === p.id} onClick={() => setPlatform(p.id)}>
-              {p.label}
-            </button>
-          ))}
-        </div>
         {item.title || item.description ? (
           <>
             <div className="listing">
@@ -273,56 +268,31 @@ export default function Generator({ item, onChange, onReset, settings }: Props) 
                 <CopyButton text={`${listing.title}\n\n${listing.text}`} label="Copia tutto" primary />
               </div>
             </div>
-            {sellUrl && (
-              <ol className="steps">
-                <li className="step">
-                  <span className="step-n" aria-hidden>
-                    1
-                  </span>
-                  <div className="step-body">
-                    <strong>Prepara le foto</strong>
-                    <span className="muted small">
-                      {item.photos.length
-                        ? shareable
-                          ? 'Condividile e scegli l’app di ' + platformLabel
-                          : `${item.photos.length} foto, finiscono nella cartella Download`
-                        : 'Nessuna foto aggiunta'}
-                    </span>
-                  </div>
-                  {shareable ? (
-                    <button className="btn btn-sm btn-ghost" onClick={() => sharePhotos(item.photos, listing.title, listing.text)}>
-                      Condividi foto
-                    </button>
-                  ) : (
-                    <button className="btn btn-sm btn-ghost" disabled={!item.photos.length} onClick={() => downloadPhotos(item.photos, listing.title)}>
-                      Scarica foto
-                    </button>
-                  )}
-                </li>
-                <li className="step">
-                  <span className="step-n" aria-hidden>
-                    2
-                  </span>
-                  <div className="step-body">
-                    <strong>Apri {platformLabel} e incolla</strong>
-                    <div className="chips">
-                      <CopyButton text={listing.title} label="Titolo" />
-                      <CopyButton text={listing.text} label="Descrizione" />
-                      {publishPrice != null && <CopyButton text={String(publishPrice).replace('.', ',')} label={`Prezzo ${eur(publishPrice)}`} />}
-                    </div>
-                    {publishPrice != null && publishPrice > item.askingPrice! && (
-                      <span className="muted small">
-                        Include il {negotiationMargin(platform, settings)}% di margine: puoi accettare offerte fino a {eur(item.askingPrice)}.
-                        {platform === 'ebay' && ' Attiva la “Proposta d’acquisto” e imposta il rifiuto automatico sotto questa cifra.'}
-                      </span>
-                    )}
-                  </div>
-                  <a className="btn btn-sm btn-primary" href={sellUrl} target="_blank" rel="noreferrer">
-                    Apri {platformLabel} ↗
-                  </a>
-                </li>
-              </ol>
-            )}
+            <div className="vinted-publish">
+              <div>
+                <strong>Invia l’annuncio a Vinted</strong>
+                <p className="muted small">Con l’estensione Rivendo per Chrome, il pulsante invia titolo, descrizione, prezzo e dettagli direttamente ai campi di Vinted. Tu controlli l’annuncio e premi Pubblica.</p>
+              </div>
+              <button className="btn btn-primary" onClick={publishOnVinted} disabled={publishing}>
+                {publishing ? 'Preparo…' : 'Pubblica su Vinted ↗'}
+              </button>
+            </div>
+            <div className="steps">
+              <div className="step">
+                <span className="step-n" aria-hidden>1</span>
+                <div className="step-body"><strong>Foto pronte</strong><span className="muted small">{item.photos.length ? `${item.photos.length} foto pronte per Vinted` : 'Nessuna foto aggiunta'}</span></div>
+                {shareable ? (
+                  <button className="btn btn-sm btn-ghost" onClick={() => sharePhotos(item.photos, listing.title, listing.text)}>Condividi foto</button>
+                ) : (
+                  <button className="btn btn-sm btn-ghost" disabled={!item.photos.length} onClick={() => downloadPhotos(item.photos, listing.title)}>Scarica foto</button>
+                )}
+              </div>
+              <div className="step">
+                <span className="step-n" aria-hidden>2</span>
+                <div className="step-body"><strong>Controlla e pubblica</strong><span className="muted small">L’estensione compila i campi di testo. Per ragioni di sicurezza del browser, le foto restano da aggiungere in Vinted.</span></div>
+              </div>
+            </div>
+            {publishError && <p className="error small" role="alert">{publishError}</p>}
           </>
         ) : (
           <p className="muted small">Compila titolo e descrizione, oppure usa l’AI, per generare l’annuncio.</p>

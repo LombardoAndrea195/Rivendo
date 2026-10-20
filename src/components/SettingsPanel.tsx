@@ -1,12 +1,5 @@
 import { useState } from 'react'
-import { FEES_CHECKED, feeRule, type AccountType, type FeePlatform } from '../fees'
 import { DEFAULT_MODELS, MODEL_OPTIONS, fetchModels, type AiProvider, type Settings } from '../settings'
-
-const FEE_PLATFORMS: { id: FeePlatform; label: string }[] = [
-  { id: 'vinted', label: 'Vinted' },
-  { id: 'subito', label: 'Subito' },
-  { id: 'ebay', label: 'eBay' },
-]
 
 const KEY_LINKS: Record<AiProvider, { label: string; url: string }> = {
   gemini: { label: 'Google AI Studio (gratuito)', url: 'https://aistudio.google.com/apikey' },
@@ -149,64 +142,5 @@ function ModelPicker({ settings, onChange }: Props) {
       )}
       {fetched?.provider === settings.provider && !fetchedIds.some((id) => !curated.some((m) => m.id === id)) && !error && <p className="muted small">Nessun altro modello adatto trovato.</p>}
     </div>
-  )
-}
-
-export function FeesPanel({ settings, onChange }: Props) {
-  return (
-    <details className="panel">
-      <summary>
-        <h2>Commissioni e margine di trattativa</h2>
-      </summary>
-      <p className="muted small">
-        Scegli il tipo di account che usi su ogni piattaforma: le commissioni vengono applicate al calcolo di quanto ti resta. Tariffe verificate il {FEES_CHECKED}.
-      </p>
-      <ul className="fee-list">
-        {FEE_PLATFORMS.map((p) => {
-          const account = settings.accounts[p.id]
-          const rule = feeRule(p.id, account)
-          const summary = p.id === 'ebay' && account === 'pro' ? '6,5–12,5% secondo la categoria + 0,35 € a ordine + 0,35%' : rule.summary
-          return (
-            <li key={p.id} className="fee-row">
-              <div className="fee-head">
-                <strong>{p.label}</strong>
-                <div className="segmented" role="radiogroup" aria-label={`Account ${p.label}`}>
-                  {(['privato', 'pro'] as AccountType[]).map((a) => (
-                    <button key={a} role="radio" aria-checked={account === a} onClick={() => onChange({ ...settings, accounts: { ...settings.accounts, [p.id]: a } })}>
-                      {a === 'privato' ? 'Privato' : 'Professionale'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <p className={`fee-summary ${rule.tiers.length ? '' : 'pos'}`}>{summary}</p>
-              <p className="muted small">
-                {rule.note}{' '}
-                <a href={rule.source} target="_blank" rel="noreferrer">
-                  Fonte ufficiale ↗
-                </a>
-              </p>
-              <label className="field inline">
-                <span className="field-label">Margine per le trattative</span>
-                <div className="input-row">
-                  <input
-                    className="input short"
-                    type="number"
-                    inputMode="numeric"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={settings.negotiation[p.id]}
-                    onChange={(e) =>
-                      onChange({ ...settings, negotiation: { ...settings.negotiation, [p.id]: Math.min(100, Math.max(0, Number(e.target.value) || 0)) } })
-                    }
-                  />
-                  <span className="muted">%</span>
-                </div>
-              </label>
-            </li>
-          )
-        })}
-      </ul>
-    </details>
   )
 }

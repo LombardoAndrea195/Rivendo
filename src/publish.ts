@@ -1,12 +1,6 @@
-import type { Platform } from './types'
-
 const photoBlob = async (dataUrl: string) => (await fetch(dataUrl)).blob()
 
-export const SELL_URLS: Partial<Record<Platform, string>> = {
-  vinted: 'https://www.vinted.it/items/new',
-  subito: 'https://inserimento.subito.it/',
-  ebay: 'https://www.ebay.it/sl/sell',
-}
+export const VINTED_SELL_URL = 'https://www.vinted.it/items/new'
 
 const slug = (s: string) =>
   s

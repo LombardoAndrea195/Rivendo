@@ -1,4 +1,3 @@
-export type Platform = 'vinted' | 'subito' | 'ebay' | 'altro'
 export type Condition = 'nuovo-etichetta' | 'nuovo' | 'ottimo' | 'buono' | 'discreto'
 
 export interface PriceEstimate {
@@ -20,17 +19,9 @@ export interface Item {
   hashtags: string[]
   purchasePrice: number | null
   askingPrice: number | null
-  ebayCategory?: string
   notes: string
   estimate: PriceEstimate | null
 }
-
-export const PLATFORMS: { id: Platform; label: string }[] = [
-  { id: 'vinted', label: 'Vinted' },
-  { id: 'subito', label: 'Subito' },
-  { id: 'ebay', label: 'eBay' },
-  { id: 'altro', label: 'Altro' },
-]
 
 export const CONDITIONS: { id: Condition; label: string }[] = [
   { id: 'nuovo-etichetta', label: 'Nuovo con etichetta' },

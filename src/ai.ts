@@ -13,7 +13,7 @@ export interface AiResult {
   estimate: PriceEstimate
 }
 
-const PROMPT = `Sei un esperto di compravendita dell'usato in Italia (Vinted, Subito, eBay).
+const PROMPT = `Sei un esperto di compravendita dell'usato su Vinted in Italia.
 Analizza le foto dell'oggetto e prepara un annuncio di vendita in italiano.
 Rispondi SOLO con un oggetto JSON con questa forma:
 {
