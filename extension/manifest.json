@@ -3,7 +3,11 @@
   "name": "Rivendo per Vinted",
   "version": "0.1.0",
   "description": "Compila l'annuncio Vinted con i dati preparati da Rivendo. Non pubblica mai automaticamente.",
-  "permissions": ["clipboardRead"],
+  "permissions": ["clipboardRead", "activeTab"],
+  "action": {
+    "default_title": "Compila Vinted con Rivendo",
+    "default_popup": "popup.html"
+  },
   "host_permissions": ["https://www.vinted.it/*", "https://www.vinted.com/*"],
   "content_scripts": [
     {

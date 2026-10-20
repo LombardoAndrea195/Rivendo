@@ -90,10 +90,10 @@
     return parsed?.source === TRANSFER_SOURCE && parsed?.version === 1 ? parsed : null
   }
 
-  const run = async () => {
+  const run = async (providedData) => {
     if (filled) return true
     try {
-      const data = await getTransfer()
+      const data = providedData || (await getTransfer())
       if (!data) return false
       let count = fillTextFields(data)
       for (const [labels, value] of [
@@ -115,6 +115,12 @@
 
   let attempts = 0
   if (!window.location.pathname.includes('/items/new')) return
+  const extension = globalThis.browser || globalThis.chrome
+  extension?.runtime?.onMessage?.addListener((message, _sender, sendResponse) => {
+    if (message?.type !== 'RIVENDO_FILL' || !message.data) return
+    run(message.data).then((success) => sendResponse({ success }))
+    return true
+  })
   const timer = setInterval(async () => {
     attempts += 1
     if ((await run()) || attempts >= MAX_ATTEMPTS) clearInterval(timer)
